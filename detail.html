@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Produk | Scrooth Glifth</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Italiana&family=Marcellus&family=Tenor+Sans&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
+        rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- GSAP & Lenis -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        .detail-hero {
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            padding: 150px 0 100px;
+            background: var(--bg);
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 6rem;
+            align-items: start;
+        }
+
+        .detail-image-box {
+            position: sticky;
+            top: 120px;
+            background: var(--white);
+            padding: 1.5rem;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+        }
+
+        .detail-image-box img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            display: block;
+        }
+
+        .detail-info {
+            padding: 1rem 0;
+        }
+
+        .detail-title {
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            line-height: 1.1;
+            margin-bottom: 2rem;
+            font-family: var(--font-heading);
+        }
+
+        .detail-desc {
+            font-size: 1.1rem;
+            color: var(--text);
+            margin-bottom: 3rem;
+            line-height: 1.8;
+            opacity: 0.8;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin-bottom: 4rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .feature-item i {
+            color: var(--accent);
+            width: 20px;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            text-decoration: none;
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: 3rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 0.75rem;
+            transition: 0.3s;
+        }
+
+        .back-btn:hover {
+            transform: translateX(-10px);
+        }
+
+        .detail-actions {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 1024px) {
+            .detail-grid {
+                grid-template-columns: 1fr;
+                gap: 4rem;
+            }
+
+            .detail-image-box {
+                position: relative;
+                top: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="spotlight"></div>
+
+    <!-- Floating Nav Toggle (shows when sidebar is closed) -->
+    <div class="nav-floating-toggle" id="nav-open-trigger">
+        <span class="toggle-logo">SG</span>
+    </div>
+
+    <!-- Side Navbar -->
+    <nav class="side-nav" id="sidebar">
+        <div class="nav-header">
+            <a href="index.html" class="logo">SG</a>
+            <button class="menu-close-btn" id="nav-close-trigger"><i data-lucide="minimize-2"></i></button>
+        </div>
+        <ul class="nav-items">
+            <li><a href="index.html#home" class="nav-item" data-tooltip="Welcome"><i data-lucide="house"></i></a></li>
+            <li><a href="index.html#bio" class="nav-item" data-tooltip="Philosophy"><i data-lucide="sparkles"></i></a>
+            </li>
+            <li><a href="index.html#catalog" class="nav-item active" data-tooltip="Collection"><i
+                        data-lucide="layout-grid"></i></a></li>
+            <li><a href="index.html#payment" class="nav-item" data-tooltip="Transaction"><i
+                        data-lucide="wallet-cards"></i></a></li>
+            <li><a href="index.html#contact" class="nav-item" data-tooltip="Connection"><i
+                        data-lucide="feather"></i></a></li>
+        </ul>
+        <div class="nav-footer"></div>
+    </nav>
+
+    <main class="detail-hero"
+        style="margin-left: var(--nav-width); transition: margin-left 0.8s cubic-bezier(0.8,0,0.2,1);">
+        <div class="container">
+            <a href="index.html#catalog" class="back-btn"><i data-lucide="arrow-left"></i> Kembali ke Katalog</a>
+
+            <div class="detail-grid">
+                <div class="detail-image-box detail-entrance-img">
+                    <img id="product-img" src="" alt="Product Detail">
+                </div>
+
+                <div class="detail-info detail-entrance-info">
+                    <span class="section-tag" id="product-tag">Undangan Digital</span>
+                    <h1 class="detail-title" id="product-title">Loading...</h1>
+                    <p class="detail-desc" id="product-desc"></p>
+
+                    <ul class="feature-list" id="feature-list">
+                        <!-- Features populated by JS -->
+                    </ul>
+
+                    <div class="detail-actions">
+                        <a href="#" id="demo-link" target="_blank" class="btn btn-primary">Lihat Demo Langsung</a>
+                        <a href="https://wa.me/62895337858815" class="btn btn-outline"
+                            style="border: 1px solid var(--accent); color: var(--accent);">Pesan Sekarang</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer section-padding"
+        style="margin-left: var(--nav-width); transition: margin-left 0.8s cubic-bezier(0.8,0,0.2,1);">
+        <div class="container text-center">
+            <p>&copy; 2024 Scrooth Glifth. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script>
+        // Lenis Smooth Scroll
+        const lenis = new Lenis({ duration: 1.8, smoothWheel: true });
+        function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+        requestAnimationFrame(raf);
+
+        // GSAP ScrollTrigger
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Navbar Toggle (pure CSS class, no GSAP conflict)
+        const sidebar = document.getElementById('sidebar');
+        const navOpenBtn = document.getElementById('nav-open-trigger');
+        const navCloseBtn = document.getElementById('nav-close-trigger');
+        const mainEl = document.querySelector('main.detail-hero');
+        const footerEl = document.querySelector('footer.footer');
+
+        function toggleSidebar(isCollapsed) {
+            sidebar.classList.toggle('collapsed', isCollapsed);
+            navOpenBtn.classList.toggle('visible', isCollapsed);
+            if (mainEl) mainEl.style.marginLeft = isCollapsed ? '0' : 'var(--nav-width)';
+            if (footerEl) footerEl.style.marginLeft = isCollapsed ? '0' : 'var(--nav-width)';
+        }
+
+        if (navCloseBtn) navCloseBtn.addEventListener('click', () => toggleSidebar(true));
+        if (navOpenBtn) navOpenBtn.addEventListener('click', () => toggleSidebar(false));
+
+        // Spotlight
+        const spotlight = document.querySelector('.spotlight');
+        window.addEventListener('mousemove', (e) => {
+            gsap.to(spotlight, { x: e.clientX, y: e.clientY, xPercent: -50, yPercent: -50, duration: 1.2, ease: "power2.out" });
+        });
+
+        // Product Data
+        const products = {
+            undangan: [
+                { name: "Model 01", desc: "Desain undangan digital yang abadi dengan sentuhan tipografi klasik dan elemen formal. Cocok untuk pernikahan dengan konsep tradisional maupun internasional yang mewah.", img: "assets/images/undangan/template1.png", link: "https://undangandigital-template1.netlify.app", features: ["RSVP Management", "Interactive Audio", "Google Maps Integration", "Guest Greeting", "Digital Envelope", "Wedding Story"] },
+                { name: "Model 02", desc: "Gaya kontemporer yang bersih dengan fokus pada whitespace dan layout minimalis. Pilihan tepat bagi pasangan yang menginginkan tampilan modern dan profesional.", img: "assets/images/undangan/template2.png", link: "https://undangandigital-template2.netlify.app", features: ["Dark/Light Mode", "Animated Gallery", "Wish Walls", "Countdown Timer", "Music Background", "Custom Color Scheme"] },
+                { name: "Model 03", desc: "Menceritakan perjalanan cinta Anda melalui pengalaman scroll yang imersif dan interaktif. Setiap gerakan mengaktifkan elemen baru yang mempesona.", img: "assets/images/undangan/template3.png", link: "https://undangandigital-template3.netlify.app", features: ["GSAP Animations", "Full Storytelling", "Custom Illustrations", "Multi-device Layout", "Parallax Effects", "Auto-play Features"] },
+                { name: "Model 04", desc: "Kombinasi antara kesederhanaan desain dan aksen emas yang memberikan kesan mewah namun tetap rendah hati dan elegan.", img: "assets/images/undangan/template4.png", link: "https://undangandigital-template4.netlify.app", features: ["Gold Foiling Effect", "Simplified Navigation", "Direct WhatsApp RSVP", "High Precision Design", "Custom Icons", "Fast Load System"] },
+                { name: "Model 05", desc: "Tampilan editorial layaknya sebuah majalah seni. Memberikan ruang bagi foto-foto Anda untuk berbicara dalam tata letak yang artistik.", img: "assets/images/undangan/template5.png", link: "https://undangandigital-template5.netlify.app", features: ["Artistic Layout", "Gallery High-Res", "Dynamic Typography", "Unique Navigators", "Magazine Style", "Smooth Transitions"] }
+            ],
+            gift: [
+                { name: "ProfileBirthday-Template", desc: "Pengalaman digital unik dalam bentuk buku interaktif. Cocok untuk hadiah kejutan yang bisa dipersonalisasi dengan foto dan pesan mengharukan.", img: "assets/images/fun-gift/gift1.png", link: "https://profilebirthday-template.vercel.app/", features: ["Flipping Book Logic", "Photo Album Layout", "Surprise Reveal", "Background Music", "Direct Greetings", "Interactive Mini-games"] }
+            ]
+        };
+
+        window.addEventListener('load', () => {
+            // Load product data
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = parseInt(urlParams.get('id')) || 0;
+            const type = urlParams.get('type') || 'undangan';
+            const product = products[type]?.[id];
+
+            if (product) {
+                document.getElementById('product-title').innerText = product.name;
+                document.getElementById('product-desc').innerText = product.desc;
+                document.getElementById('product-img').src = product.img;
+                document.getElementById('demo-link').href = product.link;
+                document.getElementById('product-tag').innerText = type === 'undangan' ? 'Undangan Digital' : 'Surprise Gift';
+                const list = document.getElementById('feature-list');
+                product.features.forEach(f => {
+                    const li = document.createElement('li');
+                    li.className = 'feature-item';
+                    li.innerHTML = `<i data-lucide="check-circle-2"></i> ${f}`;
+                    list.appendChild(li);
+                });
+                lucide.createIcons();
+            }
+
+            // CINEMATIC ENTRANCE - matching index.html aesthetic
+            gsap.set('.side-nav', { x: -100 });
+            gsap.set('.detail-entrance-img', { opacity: 0, x: -60, scale: 0.95 });
+            gsap.set('.detail-entrance-info > *', { opacity: 0, y: 40 });
+
+            const tl = gsap.timeline({ defaults: { ease: "expo.out" } });
+            tl
+                .to('.side-nav', { x: 0, duration: 1.5 }, 0)
+                .call(() => gsap.set('.side-nav', { clearProps: 'x,transform' }))
+                .to('.detail-entrance-img', { opacity: 1, x: 0, scale: 1, duration: 2, ease: "power3.out" }, 0.4)
+                .to('.detail-entrance-info > *', { opacity: 1, y: 0, duration: 1.2, stagger: 0.12 }, 0.8);
+        });
+    </script>
+</body>
+
+</html>
