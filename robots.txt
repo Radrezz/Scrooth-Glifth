@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://scroothglifth.netlify.app/sitemap.xml
