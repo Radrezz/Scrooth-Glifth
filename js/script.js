@@ -158,14 +158,14 @@ const centralLink = document.getElementById('view-detail-link');
 
 const catalogData = {
     undangan: [
-        { name: "Model 01", desc: "Romeo & Juliet concept - Elegant, formal, dan classical.", img: "assets/images/undangan/template1.png", id: 0 },
-        { name: "Model 02", desc: "Javanese Version - Template bersih dengan sentuhan tradisional.", img: "assets/images/undangan/template2.png", id: 1 },
-        { name: "Model 03", desc: "Aesthetic Simple - Pendekatan minimal untuk keterbacaan sempurna.", img: "assets/images/undangan/template3.png", id: 2 },
-        { name: "Model 04", desc: "Clean Color Mix - Palet warna modern dengan interaksi halus.", img: "assets/images/undangan/template4.png", id: 3 },
-        { name: "Model 05", desc: "Modern Simple Elegant - Layout premium untuk kemewahan digital.", img: "assets/images/undangan/template5.png", id: 4 }
+        { name: "Model 01", desc: "Romeo & Juliet concept - Elegant, formal, dan classical.", img: "assets/images/undangan/template1.png", id: 0, oldPrice: "50.000", newPrice: "30.000", note: "berlaku hingga 12 april 2026" },
+        { name: "Model 02", desc: "Javanese Version - Template bersih dengan sentuhan tradisional.", img: "assets/images/undangan/template2.png", id: 1, oldPrice: "50.000", newPrice: "30.000", note: "berlaku hingga 12 april 2026" },
+        { name: "Model 03", desc: "Aesthetic Simple - Pendekatan minimal untuk keterbacaan sempurna.", img: "assets/images/undangan/template3.png", id: 2, oldPrice: "50.000", newPrice: "30.000", note: "berlaku hingga 12 april 2026" },
+        { name: "Model 04", desc: "Clean Color Mix - Palet warna modern dengan interaksi halus.", img: "assets/images/undangan/template4.png", id: 3, oldPrice: "50.000", newPrice: "30.000", note: "berlaku hingga 12 april 2026" },
+        { name: "Model 05", desc: "Modern Simple Elegant - Layout premium untuk kemewahan digital.", img: "assets/images/undangan/template5.png", id: 4, oldPrice: "50.000", newPrice: "30.000", note: "berlaku hingga 12 april 2026" }
     ],
     gift: [
-        { name: "Birthday Template", desc: "Pengalaman buku interaktif untuk kejutan digital yang sempurna.", img: "assets/images/fun-gift/gift1.png", id: 0 }
+        { name: "Birthday Template", desc: "Pengalaman buku interaktif untuk kado digital yang sempurna.", img: "assets/images/fun-gift/gift1.png", id: 0, prefix: "Mulai dari ", oldPrice: "60.000", newPrice: "40.000" }
     ]
 };
 
@@ -242,6 +242,12 @@ function renderCarousel() {
                     <div class="mobile-card-info">
                         <h3>${item.name}</h3>
                         <p>${item.desc}</p>
+                        <div class="mobile-card-price">
+                            ${item.prefix ? `<span class="price-prefix">${item.prefix}</span>` : ''}
+                            <span class="price-old">Rp${item.oldPrice}</span>
+                            <span class="price-new">Rp${item.newPrice}</span>
+                            ${item.note ? `<div class="price-note">${item.note}</div>` : ''}
+                        </div>
                         <a href="detail.html?id=${item.id}&type=${activeCategory}" class="btn btn-primary btn-sm">Lihat Detail</a>
                     </div>
                 `;
@@ -337,6 +343,21 @@ function updateCenterInfo() {
             if (centralTitle) centralTitle.innerText = item.name;
             if (centralDesc) centralDesc.innerText = item.desc;
             if (centralLink) centralLink.setAttribute('href', `detail.html?id=${item.id}&type=${activeCategory}`);
+            
+            // Update Price Info
+            const priceContainer = document.getElementById('active-product-price');
+            if (priceContainer) {
+                const prefixEl = priceContainer.querySelector('.price-prefix');
+                const oldEl = priceContainer.querySelector('.price-old');
+                const newEl = priceContainer.querySelector('.price-new');
+                const noteEl = priceContainer.querySelector('.price-note');
+                
+                if (prefixEl) prefixEl.innerText = item.prefix || '';
+                if (oldEl) oldEl.innerText = item.oldPrice ? `Rp${item.oldPrice}` : '';
+                if (newEl) newEl.innerText = item.newPrice ? `Rp${item.newPrice}` : '';
+                if (noteEl) noteEl.innerText = item.note || '';
+            }
+
             gsap.fromTo('.circular-center > *', { y: 15, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7, stagger: 0.08, ease: "power2.out" });
         }
     });

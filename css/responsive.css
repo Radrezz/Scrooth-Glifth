@@ -398,7 +398,36 @@
         font-size: 0.85rem;
         opacity: 0.6;
         line-height: 1.7;
+        margin-bottom: 1.2rem;
+    }
+
+    .mobile-card-price {
         margin-bottom: 2rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .mobile-card-price .price-old {
+        text-decoration: line-through;
+        opacity: 0.4;
+        font-size: 0.9rem;
+    }
+
+    .mobile-card-price .price-new {
+        color: var(--accent);
+        font-family: var(--font-heading);
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin: 0.2rem 0;
+    }
+
+    .mobile-card-price .price-note {
+        font-size: 0.7rem;
+        color: var(--accent);
+        font-style: italic;
+        opacity: 0.8;
     }
 
     /* Payment & Footer Fixes */

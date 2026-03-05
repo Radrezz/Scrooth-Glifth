@@ -175,6 +175,13 @@
                     <span class="section-tag" id="product-tag">Undangan Digital</span>
                     <h1 class="detail-title" id="product-title">Loading...</h1>
                     <p class="detail-desc" id="product-desc"></p>
+                    <div id="product-price" class="product-price"
+                        style="justify-content: flex-start; margin-bottom: 2.5rem;">
+                        <span class="price-prefix"></span>
+                        <span class="price-old"></span>
+                        <span class="price-new" style="font-size: 2.2rem;"></span>
+                        <div class="price-note"></div>
+                    </div>
 
                     <ul class="feature-list" id="feature-list">
                         <!-- Features populated by JS -->
@@ -233,14 +240,14 @@
         // Product Data
         const products = {
             undangan: [
-                { name: "Model 01", desc: "Desain undangan digital yang abadi dengan sentuhan tipografi klasik dan elemen formal. Cocok untuk pernikahan dengan konsep tradisional maupun internasional yang mewah.", img: "assets/images/undangan/template1.png", link: "https://undangandigital-template1.netlify.app", features: ["RSVP Management", "Interactive Audio", "Google Maps Integration", "Guest Greeting", "Digital Envelope", "Wedding Story"] },
-                { name: "Model 02", desc: "Gaya kontemporer yang bersih dengan fokus pada whitespace dan layout minimalis. Pilihan tepat bagi pasangan yang menginginkan tampilan modern dan profesional.", img: "assets/images/undangan/template2.png", link: "https://undangandigital-template2.netlify.app", features: ["Dark/Light Mode", "Animated Gallery", "Wish Walls", "Countdown Timer", "Music Background", "Custom Color Scheme"] },
-                { name: "Model 03", desc: "Menceritakan perjalanan cinta Anda melalui pengalaman scroll yang imersif dan interaktif. Setiap gerakan mengaktifkan elemen baru yang mempesona.", img: "assets/images/undangan/template3.png", link: "https://undangandigital-template3.netlify.app", features: ["GSAP Animations", "Full Storytelling", "Custom Illustrations", "Multi-device Layout", "Parallax Effects", "Auto-play Features"] },
-                { name: "Model 04", desc: "Kombinasi antara kesederhanaan desain dan aksen emas yang memberikan kesan mewah namun tetap rendah hati dan elegan.", img: "assets/images/undangan/template4.png", link: "https://undangandigital-template4.netlify.app", features: ["Gold Foiling Effect", "Simplified Navigation", "Direct WhatsApp RSVP", "High Precision Design", "Custom Icons", "Fast Load System"] },
-                { name: "Model 05", desc: "Tampilan editorial layaknya sebuah majalah seni. Memberikan ruang bagi foto-foto Anda untuk berbicara dalam tata letak yang artistik.", img: "assets/images/undangan/template5.png", link: "https://undangandigital-template5.netlify.app", features: ["Artistic Layout", "Gallery High-Res", "Dynamic Typography", "Unique Navigators", "Magazine Style", "Smooth Transitions"] }
+                { name: "Model 01", desc: "Desain undangan digital yang abadi dengan sentuhan tipografi klasik dan elemen formal. Cocok untuk pernikahan dengan konsep tradisional maupun internasional yang mewah.", img: "assets/images/undangan/template1.png", link: "https://undangandigital-template1.netlify.app", features: ["RSVP Management", "Interactive Audio", "Google Maps Integration", "Guest Greeting", "Digital Envelope", "Wedding Story"], oldPrice: "50.000", newPrice: "30.000", note: "berlaku hingga 12 april 2026" },
+                { name: "Model 02", desc: "Gaya kontemporer yang bersih dengan fokus pada whitespace dan layout minimalis. Pilihan tepat bagi pasangan yang menginginkan tampilan modern dan profesional.", img: "assets/images/undangan/template2.png", link: "https://undangandigital-template2.netlify.app", features: ["Dark/Light Mode", "Animated Gallery", "Wish Walls", "Countdown Timer", "Music Background", "Custom Color Scheme"], oldPrice: "50.000", newPrice: "30.000", note: "berlaku hingga 12 april 2026" },
+                { name: "Model 03", desc: "Menceritakan perjalanan cinta Anda melalui pengalaman scroll yang imersif dan interaktif. Setiap gerakan mengaktifkan elemen baru yang mempesona.", img: "assets/images/undangan/template3.png", link: "https://undangandigital-template3.netlify.app", features: ["GSAP Animations", "Full Storytelling", "Custom Illustrations", "Multi-device Layout", "Parallax Effects", "Auto-play Features"], oldPrice: "50.000", newPrice: "30.000", note: "berlaku hingga 12 april 2026" },
+                { name: "Model 04", desc: "Kombinasi antara kesederhanaan desain dan aksen emas yang memberikan kesan mewah namun tetap rendah hati dan elegan.", img: "assets/images/undangan/template4.png", link: "https://undangandigital-template4.netlify.app", features: ["Gold Foiling Effect", "Simplified Navigation", "Direct WhatsApp RSVP", "High Precision Design", "Custom Icons", "Fast Load System"], oldPrice: "50.000", newPrice: "30.000", note: "berlaku hingga 12 april 2026" },
+                { name: "Model 05", desc: "Tampilan editorial layaknya sebuah majalah seni. Memberikan ruang bagi foto-foto Anda untuk berbicara dalam tata letak yang artistik.", img: "assets/images/undangan/template5.png", link: "https://undangandigital-template5.netlify.app", features: ["Artistic Layout", "Gallery High-Res", "Dynamic Typography", "Unique Navigators", "Magazine Style", "Smooth Transitions"], oldPrice: "50.000", newPrice: "30.000", note: "berlaku hingga 12 april 2026" }
             ],
             gift: [
-                { name: "ProfileBirthday-Template", desc: "Pengalaman digital unik dalam bentuk buku interaktif. Cocok untuk hadiah kejutan yang bisa dipersonalisasi dengan foto dan pesan mengharukan.", img: "assets/images/fun-gift/gift1.png", link: "https://profilebirthday-template.vercel.app/", features: ["Flipping Book Logic", "Photo Album Layout", "Surprise Reveal", "Background Music", "Direct Greetings", "Interactive Mini-games"] }
+                { name: "ProfileBirthday-Template", desc: "Pengalaman digital unik dalam bentuk buku interaktif. Cocok untuk hadiah kejutan yang bisa dipersonalisasi dengan foto dan pesan mengharukan.", img: "assets/images/fun-gift/gift1.png", link: "https://profilebirthday-template.vercel.app/", features: ["Flipping Book Logic", "Photo Album Layout", "Surprise Reveal", "Background Music", "Direct Greetings", "Interactive Mini-games"], prefix: "Mulai dari ", oldPrice: "60.000", newPrice: "40.000" }
             ]
         };
 
@@ -264,6 +271,21 @@
                     li.innerHTML = `<i data-lucide="check-circle-2"></i> ${f}`;
                     list.appendChild(li);
                 });
+
+                // Update Price
+                const priceContainer = document.getElementById('product-price');
+                if (priceContainer) {
+                    const prefixEl = priceContainer.querySelector('.price-prefix');
+                    const oldEl = priceContainer.querySelector('.price-old');
+                    const newEl = priceContainer.querySelector('.price-new');
+                    const noteEl = priceContainer.querySelector('.price-note');
+
+                    if (prefixEl) prefixEl.innerText = product.prefix || '';
+                    if (oldEl) oldEl.innerText = product.oldPrice ? `Rp${product.oldPrice}` : '';
+                    if (newEl) newEl.innerText = product.newPrice ? `Rp${product.newPrice}` : '';
+                    if (noteEl) noteEl.innerText = product.note || '';
+                }
+
                 lucide.createIcons();
             }
 
