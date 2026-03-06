@@ -15,6 +15,7 @@
 
     <!-- CSS -->
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/responsive.css">
 
     <!-- GSAP & Lenis -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
@@ -141,29 +142,45 @@
 </head>
 
 <body>
+    <!-- Preloader -->
+    <div id="preloader" class="preloader">
+        <div class="preloader-content">
+            <div class="preloader-logo-wrapper">
+                <img src="assets/images/ScroothGlifth-Transparent.png" alt="Scrooth Glifth" class="preloader-logo">
+            </div>
+            <div class="preloader-progress">
+                <div class="preloader-bar"></div>
+            </div>
+            <span class="preloader-text">Crafting Your Moments</span>
+        </div>
+    </div>
+
     <div class="spotlight"></div>
 
-    <!-- Floating Nav Toggle (shows when sidebar is closed) -->
+    <!-- Floating Nav Toggle -->
     <div class="nav-floating-toggle" id="nav-open-trigger">
-        <span class="toggle-logo">SG</span>
+        <span class="toggle-logo"><img src="assets/images/ScroothGlifth-Transparent.png" alt="SG"
+                style="height: 1.5rem; width: auto; object-fit: contain;"></span>
     </div>
 
     <!-- Side Navbar -->
     <nav class="side-nav" id="sidebar">
         <div class="nav-header">
-            <a href="index.html" class="logo">SG</a>
+            <a href="index.html" class="logo"><img src="assets/images/ScroothGlifth-Transparent.png"
+                    alt="Scrooth Glifth" style="height: 2.5rem; width: auto; object-fit: contain;"></a>
             <button class="menu-close-btn" id="nav-close-trigger"><i data-lucide="minimize-2"></i></button>
         </div>
         <ul class="nav-items">
-            <li><a href="index.html#home" class="nav-item" data-tooltip="Welcome"><i data-lucide="house"></i></a></li>
-            <li><a href="index.html#bio" class="nav-item" data-tooltip="Philosophy"><i data-lucide="sparkles"></i></a>
-            </li>
-            <li><a href="index.html#catalog" class="nav-item active" data-tooltip="Collection"><i
-                        data-lucide="layout-grid"></i></a></li>
-            <li><a href="index.html#payment" class="nav-item" data-tooltip="Transaction"><i
-                        data-lucide="wallet-cards"></i></a></li>
-            <li><a href="index.html#contact" class="nav-item" data-tooltip="Connection"><i
-                        data-lucide="feather"></i></a></li>
+            <li><a href="index.html#home" class="nav-item" data-tooltip="Beranda"><i
+                        data-lucide="house"></i><span>Beranda</span></a></li>
+            <li><a href="index.html#bio" class="nav-item" data-tooltip="Filosofi"><i
+                        data-lucide="sparkles"></i><span>Filosofi</span></a></li>
+            <li><a href="index.html#catalog" class="nav-item active" data-tooltip="Koleksi"><i
+                        data-lucide="layout-grid"></i><span>Koleksi</span></a></li>
+            <li><a href="index.html#payment" class="nav-item" data-tooltip="Transaksi"><i
+                        data-lucide="wallet-cards"></i><span>Transaksi</span></a></li>
+            <li><a href="index.html#contact" class="nav-item" data-tooltip="Kontak"><i
+                        data-lucide="feather"></i><span>Kontak</span></a></li>
         </ul>
         <div class="nav-footer"></div>
     </nav>
@@ -195,8 +212,8 @@
 
                     <div class="detail-actions">
                         <a href="#" id="demo-link" target="_blank" class="btn btn-primary">Lihat Demo Langsung</a>
-                        <a href="https://wa.me/62895337858815" class="btn btn-outline"
-                            style="border: 1px solid var(--accent); color: var(--accent);">Pesan Sekarang</a>
+                        <button id="order-now-btn" class="btn btn-outline"
+                            style="border: 1px solid var(--accent); color: var(--accent);">Pesan Sekarang</button>
                     </div>
                 </div>
             </div>
@@ -208,6 +225,16 @@
             <p>&copy; 2026 Scrooth Glifth. Seluruh Hak Cipta Dilindungi.</p>
         </div>
     </footer>
+
+    <!-- Checkout Modal Indicator -->
+    <div id="checkout-modal" class="checkout-modal">
+        <div class="checkout-info">
+            <span id="cart-item-name">Tidak ada pesanan</span>
+            <small>Hanya 1 transaksi diperbolehkan</small>
+        </div>
+        <a href="" id="final-checkout-btn" class="checkout-btn" target="_blank">Checkout</a>
+        <button id="clear-cart">Hapus</button>
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
     <script>
@@ -228,11 +255,23 @@
 
         function toggleSidebar(isCollapsed) {
             sidebar.classList.toggle('collapsed', isCollapsed);
+            document.body.classList.toggle('nav-collapsed', isCollapsed);
+
+            if (window.innerWidth <= 1024) {
+                if (isCollapsed) sidebar.classList.remove('active');
+                else sidebar.classList.add('active');
+            }
+
             navOpenBtn.classList.toggle('visible', isCollapsed);
         }
 
         if (navCloseBtn) navCloseBtn.addEventListener('click', () => toggleSidebar(true));
         if (navOpenBtn) navOpenBtn.addEventListener('click', () => toggleSidebar(false));
+
+        // Close sidebar on mobile load
+        if (window.innerWidth <= 1024) {
+            toggleSidebar(true);
+        }
 
         // Spotlight
         const spotlight = document.querySelector('.spotlight');
@@ -292,17 +331,103 @@
                 lucide.createIcons();
             }
 
-            // CINEMATIC ENTRANCE - matching index.html aesthetic
-            gsap.set('.side-nav', { x: -100 });
-            gsap.set('.detail-entrance-img', { opacity: 0, x: -60, scale: 0.95 });
-            gsap.set('.detail-entrance-info > *', { opacity: 0, y: 40 });
+            // CART LOGIC (Persistent)
+            let currentCart = JSON.parse(localStorage.getItem('scrooth_cart')) || null;
 
-            const tl = gsap.timeline({ defaults: { ease: "expo.out" } });
-            tl
-                .to('.side-nav', { x: 0, duration: 1.5 }, 0)
-                .call(() => gsap.set('.side-nav', { clearProps: 'x,transform' }))
-                .to('.detail-entrance-img', { opacity: 1, x: 0, scale: 1, duration: 2, ease: "power3.out" }, 0.4)
-                .to('.detail-entrance-info > *', { opacity: 1, y: 0, duration: 1.2, stagger: 0.12 }, 0.8);
+            function updateCartUI() {
+                const checkoutModal = document.getElementById('checkout-modal');
+                const cartItemName = document.getElementById('cart-item-name');
+                const finalCheckoutBtn = document.getElementById('final-checkout-btn');
+
+                if (!currentCart) {
+                    if (checkoutModal) checkoutModal.classList.remove('active');
+                    if (cartItemName) cartItemName.innerText = "Tidak ada pesanan";
+                } else {
+                    if (checkoutModal) checkoutModal.classList.add('active');
+                    if (cartItemName) cartItemName.innerText = currentCart.name;
+
+                    const waMsg = encodeURIComponent(`Halo Scrooth Glifth, saya ingin memesan model berikut:
+Model: ${currentCart.name} (${currentCart.type})
+Link: https://scroothglifth.vercel.app/detail.html?id=${currentCart.id || 0}&type=${currentCart.type}`);
+
+                    if (finalCheckoutBtn) {
+                        finalCheckoutBtn.setAttribute('href', `https://wa.me/62895337858815?text=${waMsg}`);
+                    }
+                }
+                localStorage.setItem('scrooth_cart', JSON.stringify(currentCart));
+            }
+
+            function showPremiumToast(message) {
+                const toast = document.createElement('div');
+                toast.className = 'premium-toast';
+                toast.innerHTML = `
+                    <div class="toast-content">
+                        <i data-lucide="check-circle" style="color: #B17457; width: 20px;"></i>
+                        <span>${message}</span>
+                    </div>
+                `;
+                document.body.appendChild(toast);
+                lucide.createIcons();
+                gsap.fromTo(toast, { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: "expo.out" });
+                setTimeout(() => {
+                    gsap.to(toast, { y: -20, opacity: 0, duration: 0.6, ease: "power2.in", onComplete: () => toast.remove() });
+                }, 3000);
+            }
+
+            // Order Button Click
+            const orderBtn = document.getElementById('order-now-btn');
+            if (orderBtn) {
+                orderBtn.addEventListener('click', () => {
+                    currentCart = {
+                        id: id,
+                        type: type,
+                        name: product.name
+                    };
+                    updateCartUI();
+                    showPremiumToast(`${product.name} telah disimpan ke pesanan Anda`);
+                });
+            }
+
+            // Clear Cart
+            const clearCartBtn = document.getElementById('clear-cart');
+            if (clearCartBtn) {
+                clearCartBtn.addEventListener('click', () => {
+                    currentCart = null;
+                    updateCartUI();
+                });
+            }
+
+            updateCartUI();
+
+            // --------------------------------------------------------------------------
+            // Preloader & Entrance Animation (Matching index.html)
+            // --------------------------------------------------------------------------
+            function initPreloader() {
+                const preloader = document.getElementById('preloader');
+                if (!preloader) return;
+                const tl = gsap.timeline();
+                tl.to('.preloader-bar', { x: '0%', duration: 1.6, ease: "power2.inOut" })
+                    .to('.preloader-content', { opacity: 0, y: -60, duration: 1.2, ease: "power2.in" })
+                    .to(preloader, {
+                        yPercent: -100, duration: 1.2, ease: "expo.inOut",
+                        onStart: () => initLoadAnimations(),
+                        onComplete: () => { preloader.style.display = 'none'; }
+                    }, "-=1.0");
+            }
+
+            function initLoadAnimations() {
+                gsap.set('.side-nav', { x: -100 });
+                gsap.set('.detail-entrance-img', { opacity: 0, x: -60, scale: 0.95 });
+                gsap.set('.detail-entrance-info > *', { opacity: 0, y: 40 });
+
+                const tl = gsap.timeline({ defaults: { ease: "expo.out" } });
+                tl.to('.side-nav', { x: 0, duration: 1.5 }, 0)
+                    .call(() => gsap.set('.side-nav', { clearProps: 'x,transform' }))
+                    .to('.detail-entrance-img', { opacity: 1, x: 0, scale: 1, duration: 2, ease: "power3.out" }, 0.4)
+                    .to('.detail-entrance-info > *', { opacity: 1, y: 0, duration: 1.2, stagger: 0.12 }, 0.8);
+            }
+
+            initPreloader();
         });
     </script>
 </body>

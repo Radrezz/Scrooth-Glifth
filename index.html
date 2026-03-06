@@ -59,31 +59,46 @@
 </head>
 
 <body>
+  <!-- Preloader -->
+  <div id="preloader" class="preloader">
+    <div class="preloader-content">
+      <div class="preloader-logo-wrapper">
+        <img src="assets/images/ScroothGlifth-Transparent.png" alt="Scrooth Glifth" class="preloader-logo">
+      </div>
+      <div class="preloader-progress">
+        <div class="preloader-bar"></div>
+      </div>
+      <span class="preloader-text">Crafting Your Moments</span>
+    </div>
+  </div>
+
   <!-- Spotlight Effect -->
   <div class="spotlight"></div>
 
   <!-- Floating Nav Toggle -->
   <div class="nav-floating-toggle" id="nav-open-trigger">
-    <span class="toggle-logo">SG</span>
+    <span class="toggle-logo"><img src="assets/images/ScroothGlifth-Transparent.png" alt="SG"
+        style="height: 1.5rem; width: auto; object-fit: contain;"></span>
   </div>
 
   <!-- Side Navbar -->
   <nav class="side-nav" id="sidebar">
     <div class="nav-header">
-      <a href="#" class="logo">SG</a>
+      <a href="#" class="logo"><img src="assets/images/ScroothGlifth-Transparent.png" alt="Scrooth Glifth"
+          style="height: 2.5rem; width: auto; object-fit: contain;"></a>
       <button class="menu-close-btn" id="nav-close-trigger"><i data-lucide="minimize-2"></i></button>
     </div>
     <ul class="nav-items">
-      <li><a href="#home" class="nav-item active" data-tooltip="Welcome"><i
-            data-lucide="house"></i><span>Welcome</span></a></li>
-      <li><a href="#bio" class="nav-item" data-tooltip="Philosophy"><i
-            data-lucide="sparkles"></i><span>Philosophy</span></a></li>
-      <li><a href="#catalog" class="nav-item" data-tooltip="Collection"><i
-            data-lucide="layout-grid"></i><span>Collection</span></a></li>
-      <li><a href="#payment" class="nav-item" data-tooltip="Transaction"><i
-            data-lucide="wallet-cards"></i><span>Transaction</span></a></li>
-      <li><a href="#contact" class="nav-item" data-tooltip="Connection"><i
-            data-lucide="feather"></i><span>Connection</span></a></li>
+      <li><a href="#home" class="nav-item active" data-tooltip="Beranda"><i
+            data-lucide="house"></i><span>Beranda</span></a></li>
+      <li><a href="#bio" class="nav-item" data-tooltip="Filosofi"><i
+            data-lucide="sparkles"></i><span>Filosofi</span></a></li>
+      <li><a href="#catalog" class="nav-item" data-tooltip="Koleksi"><i
+            data-lucide="layout-grid"></i><span>Koleksi</span></a></li>
+      <li><a href="#payment" class="nav-item" data-tooltip="Transaksi"><i
+            data-lucide="wallet-cards"></i><span>Transaksi</span></a></li>
+      <li><a href="#contact" class="nav-item" data-tooltip="Kontak"><i data-lucide="feather"></i><span>Kontak</span></a>
+      </li>
     </ul>
     <div class="nav-footer"></div>
   </nav>
@@ -120,7 +135,7 @@
             </div>
             <div class="hero-btns reveal-up" style="--d: 0.8s">
               <a href="#catalog" class="btn btn-primary">Eksplor Koleksi</a>
-              <a href="#contact" class="btn btn-outline">Mulai Konsultasi</a>
+              <a href="#contact" class="btn btn-outline">Rancang Momen Anda</a>
             </div>
           </div>
         </div>
@@ -137,19 +152,22 @@
           <div class="bento-grid">
             <div class="bento-item bento-main reveal-up">
               <span class="section-tag">Filosofi Kami</span>
-              <h2 class="font-framed">Keindahan dalam <br><span>Kesederhanaan</span></h2>
-              <p>Kami percaya bahwa setiap hadiah dan undangan adalah representasi dari kasih sayang dan rasa hormat
-                yang mendalam.</p>
+              <h2 class="font-framed">Ketenangan dalam <br><span>Kelembutan</span></h2>
+              <p>Di tengah riuhnya dunia, kami menghadirkan media dengan alur yang lambat dan menenangkan—sebuah jeda
+                sejenak untuk merayakan momen berharga.</p>
             </div>
             <div class="bento-item bento-feature reveal-up" style="--d: 0.1s">
-              <i data-lucide="shield-check"></i>
-              <h3>Kualitas Premium</h3>
-              <p>Bahan dan desain pilihan untuk standar tertinggi.</p>
+              <i data-lucide="gift"></i>
+              <h3>Momen Abadi</h3>
+              <p>Eksplorasi ide hadiah untuk orang tersayang yang takkan lekang oleh waktu dan selalu membekas di
+                ingatan.</p>
             </div>
             <div class="bento-item bento-feature reveal-up" style="--d: 0.2s">
-              <i data-lucide="zap"></i>
-              <h3>Proses Cepat</h3>
-              <p>Layanan profesional dengan ketepatan waktu.</p>
+              <i data-lucide="feather"></i>
+              <h3>Visual Interaktif</h3>
+              <p>Hadir dengan transisi layar yang mengalir lembut, menciptakan harmoni sempurna antara estetika visual
+                dan ketenangan interaktif.
+              </p>
             </div>
             <div class="bento-item bento-image reveal-up" style="--d: 0.3s">
               <img src="https://images.unsplash.com/photo-1513201099705-a9746e1e201f?auto=format&fit=crop&q=80&w=1000"
@@ -182,7 +200,6 @@
                     <a href="detail.html" id="view-detail-link" class="btn btn-primary btn-sm">Lihat Detail</a>
                     <button id="next-circle" class="nav-btn-sm"><i data-lucide="chevron-right"></i></button>
                   </div>
-                  <button id="add-to-cart-btn" class="btn btn-outline btn-sm">Simpan Pesanan</button>
                   <div class="category-switch">
                     <button class="category-toggle-btn active" data-type="undangan">Undangan</button>
                     <button class="category-toggle-btn" data-type="gift">Gift</button>
@@ -282,12 +299,13 @@
             </div>
             <div class="faq-item">
               <div class="faq-question">
-                <h3>Apakah bisa revisi data setelah jadi?</h3>
+                <h3>Berapa lama masa aktif link undangan digital?</h3>
                 <i data-lucide="plus"></i>
               </div>
               <div class="faq-answer">
-                <p>Tentu saja. Kami memberikan kesempatan revisi gratis hingga undangan benar-benar sesuai dengan
-                  keinginan Anda sebelum link disebarkan secara massal.</p>
+                <p>Setiap link undangan yang kami buat akan tetap aktif selamanya tanpa batas waktu. Kami memastikan
+                  momen berharga Anda tetap dapat diakses kapan pun sebagai bagian dari komitmen layanan premium kami.
+                </p>
               </div>
             </div>
             <div class="faq-item">
@@ -323,7 +341,7 @@
               <div class="footer-col reveal-up" style="--d: 0.1s">
                 <h4>Eksplorasi</h4>
                 <ul>
-                  <li><a href="#home">Home</a></li>
+                  <li><a href="#home">Beranda</a></li>
                   <li><a href="#bio">Tentang Kami</a></li>
                   <li><a href="#catalog">Katalog Produk</a></li>
                 </ul>
@@ -332,16 +350,16 @@
                 <h4>Layanan</h4>
                 <ul>
                   <li><a
-                      href="https://wa.me/62895337858815?text=Halo%20Scrooth%20Glifth,%20saya%20butuh%20bantuan%20terkait%20layanan.">WhatsApp
-                      Support</a></li>
+                      href="https://wa.me/62895337858815?text=Halo%20Scrooth%20Glifth,%20saya%20butuh%20bantuan%20terkait%20layanan.">Bantuan
+                      WhatsApp</a></li>
                   <li><a href="#faq">FAQ</a></li>
                   <li><a
                       href="https://wa.me/62895337858815?text=Halo%20Scrooth%20Glifth,%20saya%20ingin%20cek%20status%20pesanan%20saya.">Status
-                      Order</a></li>
+                      Pesanan</a></li>
                 </ul>
               </div>
               <div class="footer-col reveal-right">
-                <h4>Lokasi</h4>
+                <h4>Kontak</h4>
                 <ul>
                   <li>scroothglifth@gmail.com</li>
                   <li>+62 895 3378 58815</li>
@@ -353,8 +371,8 @@
           <div class="footer-bottom">
             <p>&copy; 2026 Scrooth Glifth. Seluruh Hak Cipta Dilindungi.</p>
             <div class="legal-links">
-              <a href="privacy.html">Privacy Policy</a>
-              <a href="terms.html">Terms of Service</a>
+              <a href="privacy.html">Kebijakan Privasi</a>
+              <a href="terms.html">Ketentuan Layanan</a>
             </div>
           </div>
         </div>
@@ -369,9 +387,8 @@
       <span id="cart-item-name">Tidak ada pesanan</span>
       <small>Hanya 1 transaksi diperbolehkan</small>
     </div>
-    <a href="" id="final-checkout-btn" class="checkout-btn" target="_blank">Checkout WhatsApp</a>
-    <button id="clear-cart"
-      style="background:none; border:none; color:rgba(255,255,255,0.3); font-size:0.7rem; cursor:pointer;">Hapus</button>
+    <a href="" id="final-checkout-btn" class="checkout-btn" target="_blank">Checkout</a>
+    <button id="clear-cart">Hapus</button>
   </div>
 
   <script src="js/script.js"></script>

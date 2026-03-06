@@ -15,6 +15,39 @@ requestAnimationFrame(raf);
 // Sync ScrollTrigger
 lenis.on('scroll', ScrollTrigger.update);
 
+// --------------------------------------------------------------------------
+// 1. Preloader Animation
+// --------------------------------------------------------------------------
+function initPreloader() {
+    const preloader = document.getElementById('preloader');
+    if (!preloader) return;
+
+    const tl = gsap.timeline();
+
+    tl.to('.preloader-bar', {
+        x: '0%',
+        duration: 1.6, // Shortened
+        ease: "power2.inOut"
+    })
+        .to('.preloader-content', {
+            opacity: 0,
+            y: -60,
+            duration: 1.2, // Synchronized with slide up
+            ease: "power2.in"
+        })
+        .to(preloader, {
+            yPercent: -100, // Smooth Slide Up
+            duration: 1.2,
+            ease: "expo.inOut",
+            onStart: () => {
+                initLoadAnimations();
+            },
+            onComplete: () => {
+                preloader.style.display = 'none';
+            }
+        }, "-=1.0"); // Overlap slightly for seamless transition
+}
+
 
 // 2. GSAP Plug-ins Registration
 gsap.registerPlugin(ScrollTrigger);
@@ -104,11 +137,60 @@ function initLoadAnimations() {
         .to('.hero-btns .btn', { opacity: 1, y: 0, filter: 'blur(0px)', stagger: 0.2, duration: 1.2 }, '-=1');
 }
 
+// --------------------------------------------------------------------------
+// 2.4 Persistent Cart Logic
+// --------------------------------------------------------------------------
+let currentCart = JSON.parse(localStorage.getItem('scrooth_cart')) || null;
+
+function updateCartUI() {
+    const checkoutModal = document.getElementById('checkout-modal');
+    const cartItemName = document.getElementById('cart-item-name');
+    const finalCheckoutBtn = document.getElementById('final-checkout-btn');
+
+    if (!currentCart) {
+        if (checkoutModal) checkoutModal.classList.remove('active');
+        if (cartItemName) cartItemName.innerText = "Tidak ada pesanan";
+    } else {
+        if (checkoutModal) checkoutModal.classList.add('active');
+        if (cartItemName) cartItemName.innerText = currentCart.name;
+
+        // Build WA Message
+        const waMsg = encodeURIComponent(`Halo Scrooth Glifth, saya ingin memesan model berikut:
+Model: ${currentCart.name} (${currentCart.type})
+Link: https://scroothglifth.vercel.app/detail.html?id=${currentCart.id || 0}&type=${currentCart.type}`);
+
+        if (finalCheckoutBtn) {
+            finalCheckoutBtn.setAttribute('href', `https://wa.me/62895337858815?text=${waMsg}`);
+        }
+    }
+    localStorage.setItem('scrooth_cart', JSON.stringify(currentCart));
+}
+
+function showPremiumToast(message) {
+    const toast = document.createElement('div');
+    toast.className = 'premium-toast';
+    toast.innerHTML = `
+        <div class="toast-content">
+            <i data-lucide="check-circle" style="color: #6D4C41; width: 20px;"></i>
+            <span>${message}</span>
+        </div>
+    `;
+    document.body.appendChild(toast);
+    if (window.lucide) lucide.createIcons();
+
+    gsap.fromTo(toast, { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: "expo.out" });
+
+    setTimeout(() => {
+        gsap.to(toast, { y: -20, opacity: 0, duration: 0.6, ease: "power2.in", onComplete: () => toast.remove() });
+    }, 3000);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     if (window.lucide) lucide.createIcons();
+    initPreloader(); // Now triggers initLoadAnimations inside it
     initRevealAnimations();
-    initLoadAnimations();
     initScrollSpy();
+    updateCartUI(); // Initial UI sync
 
     // Check if on legal pages
     if (document.body.classList.contains('legal-page')) {
@@ -317,7 +399,6 @@ const centralLink = document.getElementById('view-detail-link');
 
 let currentGroupRotation = 0;
 let mobileCategorySelected = false;
-let currentCart = null; // Track the single active order
 
 function getLayout() {
     const vw = window.innerWidth;
@@ -400,6 +481,24 @@ function renderCarousel() {
             <span class="card-label">${item.name}</span>
         `;
         card.addEventListener('click', () => rotateToItem(i));
+
+        // Premium Hover Effect - Only for devices with a mouse
+        if (window.matchMedia("(hover: hover)").matches) {
+            card.addEventListener('mouseenter', () => {
+                gsap.to(card, {
+                    y: "-=20",
+                    scale: card.classList.contains('active') ? 1.65 : 1.1,
+                    duration: 0.6,
+                    ease: "power2.out",
+                    overwrite: "auto"
+                });
+            });
+
+            card.addEventListener('mouseleave', () => {
+                applyCardStyles();
+            });
+        }
+
         itemsCircle.appendChild(card);
     });
 
@@ -493,10 +592,7 @@ function updateCenterInfo() {
             }
 
             if (window.innerWidth <= 1024 && mobileCategorySelected) {
-                const backRow = document.createElement('div');
-                backRow.className = 'mobile-back-row mt-3';
-                backRow.innerHTML = `<button onclick="resetMobileCatalog()" class="back-link btn-sm" style="font-size:0.6rem; margin-top: 1rem;"><i data-lucide="chevron-left"></i> Ganti Kategori</button>`;
-                document.querySelector('.circular-center').appendChild(backRow);
+                // Removed Ganti Kategori button as per user request
                 if (window.lucide) lucide.createIcons();
             }
 
@@ -568,64 +664,7 @@ window.addEventListener('load', () => {
         });
     });
 
-    // Simpan Pesanan Button implementation
-    const saveOrderBtn = document.getElementById('add-to-cart-btn');
-    const checkoutModal = document.getElementById('checkout-modal');
-    const cartItemName = document.getElementById('cart-item-name');
-    const finalCheckoutBtn = document.getElementById('final-checkout-btn');
     const clearCartBtn = document.getElementById('clear-cart');
-
-    function updateCartUI() {
-        if (!currentCart) {
-            checkoutModal.classList.remove('active');
-            if (cartItemName) cartItemName.innerText = "Tidak ada pesanan";
-        } else {
-            checkoutModal.classList.add('active');
-            if (cartItemName) cartItemName.innerText = currentCart.name;
-
-            // Build WA Message
-            const waMsg = encodeURIComponent(`Halo Scrooth Glifth, saya ingin memesan model berikut:
-Model: ${currentCart.name} (${currentCart.type})
-Link: https://scroothglifth.vercel.app/detail.html?id=${currentCart.id}&type=${currentCart.type}`);
-
-            if (finalCheckoutBtn) {
-                finalCheckoutBtn.setAttribute('href', `https://wa.me/62895337858815?text=${waMsg}`);
-                finalCheckoutBtn.setAttribute('target', '_blank');
-            }
-        }
-    }
-
-    if (saveOrderBtn) {
-        saveOrderBtn.addEventListener('click', () => {
-            currentCart = {
-                ...catalogData[activeCategory][activeIndex],
-                type: activeCategory
-            };
-
-            updateCartUI();
-
-            // Create a simple premium toast notification
-            const toast = document.createElement('div');
-            toast.className = 'premium-toast';
-            toast.innerHTML = `
-                <div class="toast-content">
-                    <i data-lucide="check-circle" style="color: #6D4C41; width: 20px;"></i>
-                    <span>${currentCart.name} telah disimpan ke pesanan Anda</span>
-                </div>
-            `;
-            document.body.appendChild(toast);
-
-            if (window.lucide) lucide.createIcons();
-
-            // Animate Toast
-            gsap.fromTo(toast, { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: "expo.out" });
-
-            setTimeout(() => {
-                gsap.to(toast, { y: -20, opacity: 0, duration: 0.6, ease: "power2.in", onComplete: () => toast.remove() });
-            }, 3000);
-        });
-    }
-
     if (clearCartBtn) {
         clearCartBtn.addEventListener('click', () => {
             currentCart = null;

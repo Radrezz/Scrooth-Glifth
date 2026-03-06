@@ -143,11 +143,11 @@
         width: 54px !important;
         height: 54px !important;
         border-radius: 50% !important;
-        background: var(--accent) !important;
+        background: var(--bg) !important;
         z-index: 5000;
         /* Under the open menu but above hero */
         box-shadow: 0 10px 40px rgba(177, 116, 87, 0.4);
-        border: 2px solid rgba(255, 255, 255, 0.9) !important;
+        border: 2px solid rgba(177, 116, 87, 0.2) !important;
         padding: 0 !important;
     }
 
