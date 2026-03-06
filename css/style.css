@@ -380,6 +380,7 @@ body.nav-collapsed main {
 .btn-primary {
     background-color: var(--accent);
     color: var(--white);
+    transition: background-color 0.6s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s;
 }
 
 .btn-primary:hover {
@@ -402,6 +403,7 @@ body.nav-collapsed main {
     border: 1.5px solid var(--accent);
     color: var(--accent);
     background: transparent;
+    transition: color 0.6s ease, border-color 0.6s ease, background-color 0.6s ease, transform 0.3s;
 }
 
 .btn-outline:hover {
@@ -787,8 +789,8 @@ body.nav-collapsed main {
     display: flex;
     justify-content: center;
     align-items: center;
-    transform: translateX(-5vw);
-    /* Shifted 10% right from -15vw (Total -5vw from center) */
+    transform: translateX(-12vw);
+    /* Shifted overall container slightly to the left */
     transform-style: preserve-3d;
     width: 100%;
     margin: 0 auto;
@@ -801,15 +803,17 @@ body.nav-collapsed main {
     z-index: 20000;
     padding: 2.5rem;
     background: var(--white);
-    border: 1px solid rgba(177, 116, 87, 0.08);
+    border: 1px solid var(--accent, rgba(177, 116, 87, 0.08));
     border-radius: 65% 35% 70% 30% / 40% 60% 40% 60%;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 40px 100px rgba(177, 116, 87, 0.08);
+    box-shadow: 0 40px 90px rgba(var(--accent-rgb, 177, 116, 87), 0.25);
     position: relative;
-    transform: translateX(-160px);
+    left: -200px;
+    /* Using left instead of transform to avoid GSAP overwrite */
+    transition: border-color 0.6s ease, box-shadow 0.6s ease;
     margin-right: 0;
     animation: morphing 20s infinite alternate ease-in-out;
     pointer-events: auto !important;
@@ -839,6 +843,7 @@ body.nav-collapsed main {
     /* Increased base size for larger container */
     margin-bottom: 0.5rem;
     color: var(--accent);
+    transition: color 0.6s ease;
     font-family: var(--font-heading);
     letter-spacing: 1px;
     word-break: break-word;
@@ -862,6 +867,7 @@ body.nav-collapsed main {
 .price-new {
     font-size: 2.2rem;
     color: var(--accent);
+    transition: color 0.6s ease;
 }
 
 .product-price {
@@ -890,6 +896,7 @@ body.nav-collapsed main {
 
 .price-new {
     color: var(--accent);
+    transition: color 0.6s ease;
     font-family: var(--font-heading);
     font-size: 1.4rem;
     font-weight: 700;
@@ -899,6 +906,7 @@ body.nav-collapsed main {
     width: 100%;
     font-size: 0.65rem;
     color: var(--accent);
+    transition: color 0.6s ease;
     font-style: italic;
     margin-top: -0.2rem;
     opacity: 0.8;
@@ -911,6 +919,9 @@ body.nav-collapsed main {
     padding: 0.2rem 0.6rem;
     margin-bottom: 0.5rem;
     display: inline-block;
+    color: var(--accent);
+    background: rgba(177, 116, 87, 0.05);
+    transition: color 0.6s ease;
 }
 
 .carousel-nav-inline {
@@ -932,7 +943,7 @@ body.nav-collapsed main {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: color 0.6s ease, background-color 0.6s ease, transform 0.3s;
 }
 
 .nav-btn-sm:hover {
@@ -958,7 +969,7 @@ body.nav-collapsed main {
     align-items: center;
     pointer-events: none;
     overflow: visible;
-    transform: translateX(180px);
+    transform: translateX(240px);
     /* Balance with blob offset to center the whole unit */
 }
 
@@ -988,8 +999,9 @@ body.nav-collapsed main {
 
 /* No CSS overrides for active/inactive - GSAP handles it all */
 .circle-card.active {
-    border-color: rgba(177, 116, 87, 0.3);
-    box-shadow: 0 40px 80px rgba(177, 116, 87, 0.2);
+    border-color: rgba(var(--accent-rgb, 177, 116, 87), 0.5);
+    box-shadow: 0 40px 80px rgba(var(--accent-rgb, 177, 116, 87), 0.35);
+    transition: border-color 0.6s, box-shadow 0.6s;
 }
 
 .circle-card img {
@@ -1072,15 +1084,17 @@ body.nav-collapsed main {
     letter-spacing: 1px;
     text-transform: uppercase;
     cursor: pointer;
-    opacity: 0.4;
-    transition: 0.3s;
+    opacity: 0.5;
+    transition: color 0.6s ease, opacity 0.3s ease;
     padding: 0.5rem 0;
     position: relative;
+    color: var(--text);
 }
 
 .category-toggle-btn.active {
     opacity: 1;
     font-weight: 700;
+    color: var(--accent);
 }
 
 .category-toggle-btn.active::after {
@@ -1091,6 +1105,7 @@ body.nav-collapsed main {
     width: 100%;
     height: 2px;
     background: var(--accent);
+    transition: background-color 0.6s ease;
 }
 
 /* Payment Suite */
@@ -1593,6 +1608,7 @@ body.nav-collapsed main {
         height: auto;
         padding: 2rem;
         transform: translateY(-50px);
+        left: 0;
         margin-bottom: 0;
     }
 
@@ -1758,14 +1774,19 @@ body.nav-collapsed main {
         padding: 0.6rem 1rem;
     }
 }
+
 /* Cinema Credits Effect */
 .movie-credits-container {
-    padding-bottom: 70vh !important; /* Extremely large space for the 'end credits' feel */
+    padding-bottom: 70vh !important;
+    /* Extremely large space for the 'end credits' feel */
     position: relative;
 }
 
 /* Base states for entrance animations handled by JS */
-.hero-pretitle, .hero-main-title span, .hero-subtitle, .hero-btns .btn {
+.hero-pretitle,
+.hero-main-title span,
+.hero-subtitle,
+.hero-btns .btn {
     opacity: 0;
     transform: translateY(20px);
 }
@@ -1803,9 +1824,9 @@ body.nav-collapsed main {
 }
 
 /* Base states for Hero elements (initially hidden for Load Animation) */
-.hero-pretitle, 
-.hero-main-title span, 
-.hero-subtitle, 
+.hero-pretitle,
+.hero-main-title span,
+.hero-subtitle,
 .hero-btns .btn {
     opacity: 0;
     filter: blur(10px);

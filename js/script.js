@@ -1,9 +1,9 @@
 const lenis = new Lenis({
-    lerp: 0.06,
-    wheelMultiplier: 0.8,
-    touchMultiplier: 1.2, // Enable smooth scroll for mobile/touch
+    lerp: 0.08, // Slightly faster for responsiveness
+    wheelMultiplier: 1,
+    touchMultiplier: 1.5,
     smoothWheel: true,
-    smoothTouch: true,
+    smoothTouch: false, // Disable smooth touch to prevent jumping/rubber-banding on mobile browsers
 });
 
 function raf(time) {
@@ -154,26 +154,46 @@ function initScrollSpy() {
 }
 
 function initMovieCreditsScroll() {
-    // Special slow scroll for Terms/Privacy
-    const speed = 0.5; // slow velocity
-    let isAutoScrolling = true;
+    // Special slow scroll for Terms/Privacy with Looping
+    const speed = 0.7; // Visible slow speed
+    let isInteracting = false;
+    let resumeTimer = null;
 
     function autoScroll() {
-        if (!isAutoScrolling) return;
+        if (isInteracting || !lenis) return;
+
         const currentScroll = lenis.scroll;
         const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
 
-        if (currentScroll < maxScroll) {
-            lenis.scrollTo(currentScroll + speed, { immediate: true });
+        if (maxScroll <= 0) {
             requestAnimationFrame(autoScroll);
+            return;
         }
+
+        // Looping logic: if at bottom, reset to top
+        if (currentScroll >= maxScroll - 1) {
+            lenis.scrollTo(0, { immediate: true });
+        } else {
+            lenis.scrollTo(currentScroll + speed, { immediate: true });
+        }
+        requestAnimationFrame(autoScroll);
     }
 
-    // Toggle on interaction
-    window.addEventListener('wheel', () => isAutoScrolling = false, { once: true });
-    window.addEventListener('touchstart', () => isAutoScrolling = false, { once: true });
+    // Toggle on interaction: pause when user interacts, resume after 3s of inactivity
+    const handleInteraction = () => {
+        isInteracting = true;
+        clearTimeout(resumeTimer);
+        resumeTimer = setTimeout(() => {
+            isInteracting = false;
+            autoScroll(); // Correctly restart the loop
+        }, 3000);
+    };
 
-    // Start after slight delay
+    window.addEventListener('wheel', handleInteraction, { passive: true });
+    window.addEventListener('touchstart', handleInteraction, { passive: true });
+    window.addEventListener('mousedown', handleInteraction, { passive: true });
+
+    // Initial delay before starting
     setTimeout(autoScroll, 2000);
 }
 
@@ -276,14 +296,14 @@ if (window.innerWidth > 1024) {
 // 5. Catalog Data
 const catalogData = {
     undangan: [
-        { id: 0, name: "Model 01", desc: "Romeo & Juliet concept - Elegant, formal, dan classical.", img: "assets/images/undangan/template1.png", oldPrice: "50.000", newPrice: "30.000", note: "berlaku hingga 12 april 2026" },
-        { id: 1, name: "Model 02", desc: "Javanese Version - Template bersih dengan sentuhan tradisional.", img: "assets/images/undangan/template2.png", oldPrice: "50.000", newPrice: "30.000", note: "berlaku hingga 12 april 2026" },
-        { id: 2, name: "Model 03", desc: "Aesthetic Simple - Pendekatan minimal untuk keterbacaan sempurna.", img: "assets/images/undangan/template3.png", oldPrice: "50.000", newPrice: "30.000", note: "berlaku hingga 12 april 2026" },
-        { id: 3, name: "Model 04", desc: "Floral Garden - Desain dengan aksen bunga yang romantis.", img: "assets/images/undangan/template4.png", oldPrice: "50.000", newPrice: "30.000", note: "berlaku hingga 12 april 2026" },
-        { id: 4, name: "Model 05", desc: "Modern Minimalist - Fokus pada tipografi dan ruang kosong.", img: "assets/images/undangan/template5.png", oldPrice: "50.000", newPrice: "30.000", note: "berlaku hingga 12 april 2026" }
+        { id: 0, name: "Model 01", desc: "Romeo & Juliet concept - Elegant, formal, dan classical.", img: "assets/images/undangan/template1.png", oldPrice: "50.000", newPrice: "30.000", note: "berlaku hingga 12 april 2026", color: "#B17457" }, // Bronze
+        { id: 1, name: "Model 02", desc: "Javanese Version - Template bersih dengan sentuhan tradisional.", img: "assets/images/undangan/template2.png", oldPrice: "50.000", newPrice: "30.000", note: "berlaku hingga 12 april 2026", color: "#6A7F6E" }, // Sage Green
+        { id: 2, name: "Model 03", desc: "Aesthetic Simple - Pendekatan minimal untuk keterbacaan sempurna.", img: "assets/images/undangan/template3.png", oldPrice: "50.000", newPrice: "30.000", note: "berlaku hingga 12 april 2026", color: "#5F6D7E" }, // Slate Blue
+        { id: 3, name: "Model 04", desc: "Floral Garden - Desain dengan aksen bunga yang romantis.", img: "assets/images/undangan/template4.png", oldPrice: "50.000", newPrice: "30.000", note: "berlaku hingga 12 april 2026", color: "#8E443D" }, // Deep Red
+        { id: 4, name: "Model 05", desc: "Modern Minimalist - Fokus pada tipografi dan ruang kosong.", img: "assets/images/undangan/template5.png", oldPrice: "50.000", newPrice: "30.000", note: "berlaku hingga 12 april 2026", color: "#A68966" }  // Gold
     ],
     gift: [
-        { id: 0, name: "ProfileBirthday-Template", desc: "Template untuk ucapan ulang tahun interaktif.", img: "assets/images/fun-gift/gift1.png", prefix: "Mulai dari ", oldPrice: "60.000", newPrice: "40.000" }
+        { id: 0, name: "ProfileBirthday-Template", desc: "Template untuk ucapan ulang tahun interaktif.", img: "assets/images/fun-gift/gift1.png", prefix: "Mulai dari ", oldPrice: "60.000", newPrice: "40.000", color: "#7B6A96" } // Purple
     ]
 };
 
@@ -480,6 +500,22 @@ function updateCenterInfo() {
                 if (window.lucide) lucide.createIcons();
             }
 
+            // DYNAMIC COLOR INJECTION
+            const accentColor = item.color || '#B17457';
+            const layoutEl = document.querySelector('.circular-layout');
+
+            const hexToRgb = (hex) => {
+                const r = parseInt(hex.slice(1, 3), 16);
+                const g = parseInt(hex.slice(3, 5), 16);
+                const b = parseInt(hex.slice(5, 7), 16);
+                return `${r}, ${g}, ${b}`;
+            };
+
+            if (layoutEl) {
+                layoutEl.style.setProperty('--accent', accentColor);
+                layoutEl.style.setProperty('--accent-rgb', hexToRgb(accentColor));
+            }
+
             gsap.fromTo('.circular-center > *:not(.mobile-back-row)', { y: 15, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7, stagger: 0.08, ease: "power2.out" });
         }
     });
@@ -550,7 +586,7 @@ window.addEventListener('load', () => {
             // Build WA Message
             const waMsg = encodeURIComponent(`Halo Scrooth Glifth, saya ingin memesan model berikut:
 Model: ${currentCart.name} (${currentCart.type})
-Link: http://scroothglifth.com/detail.html?id=${currentCart.id}&type=${currentCart.type}`);
+Link: https://scroothglifth.vercel.app/detail.html?id=${currentCart.id}&type=${currentCart.type}`);
 
             if (finalCheckoutBtn) {
                 finalCheckoutBtn.setAttribute('href', `https://wa.me/62895337858815?text=${waMsg}`);
