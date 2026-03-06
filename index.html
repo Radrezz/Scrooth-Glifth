@@ -97,7 +97,7 @@
 
         <div class="hero-content container">
           <div class="hero-text-wrapper">
-            <div class="hero-frame-box reveal-up">
+            <div class="hero-frame-box reveal-fade-blur">
               <span class="hero-pretitle">Crafting Digital Excellence</span>
               <div class="hero-title-framed">
                 <h1 class="hero-main-title">
@@ -157,22 +157,22 @@
         <div class="container relative">
           <div class="circular-layout">
             <!-- Center Information -->
-            <div class="circular-center">
+            <div class="circular-center reveal-fade-blur">
               <div class="catalog-meta">
                 <span class="section-tag">Penawaran Kami</span>
-                <h2 id="active-category-title" class="reveal-up">Undangan Digital</h2>
-                <p id="active-product-desc" class="reveal-up">Kualitas premium dengan desain yang formal dan elegan
-                  untuk momen spesial Anda.</p>
-                <div id="active-product-price" class="product-price reveal-up">
+                <h2 id="active-category-title">Undangan Digital</h2>
+                <p id="active-product-desc">Kualitas premium dengan desain yang formal dan elegan untuk momen spesial
+                  Anda.</p>
+                <div id="active-product-price" class="product-price">
                   <span class="price-prefix"></span>
                   <span class="price-old"></span>
                   <span class="price-new"></span>
                   <div class="price-note"></div>
                 </div>
-                <div class="circular-btns reveal-up">
+                <div class="circular-btns">
                   <div class="carousel-nav-inline">
                     <button id="prev-circle" class="nav-btn-sm"><i data-lucide="chevron-left"></i></button>
-                    <a href="#" id="view-detail-link" class="btn btn-primary btn-sm" target="_self">Lihat Detail</a>
+                    <a href="detail.html" id="view-detail-link" class="btn btn-primary btn-sm">Lihat Detail</a>
                     <button id="next-circle" class="nav-btn-sm"><i data-lucide="chevron-right"></i></button>
                   </div>
                   <button id="add-to-cart-btn" class="btn btn-outline btn-sm">Simpan Pesanan</button>
@@ -206,7 +206,7 @@
           </div>
 
           <div class="payment-suite">
-            <div class="payment-card reveal-up" data-val="0895337858815">
+            <div class="payment-card reveal-side-left">
               <div class="p-card-brand">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/7/72/Logo_dana_blue.svg" alt="DANA Logo">
               </div>
@@ -218,7 +218,7 @@
                   class="btn-send" target="_blank"><i data-lucide="send"></i> Bukti</a>
               </div>
             </div>
-            <div class="payment-card reveal-up" data-val="0895337858815">
+            <div class="payment-card reveal-side-right" style="--d: 0.2s">
               <div class="p-card-brand">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/8/86/Gopay_logo.svg" alt="GoPay Logo">
               </div>
@@ -230,7 +230,7 @@
                   class="btn-send" target="_blank"><i data-lucide="send"></i> Bukti</a>
               </div>
             </div>
-            <div class="payment-card reveal-up" data-val="6288991179166">
+            <div class="payment-card reveal-side-left" style="--d: 0.4s">
               <div class="p-card-brand">
                 <img src="assets/images/shopeepay.svg" alt="ShopeePay Logo" style="width: 140px; height: auto;">
               </div>
@@ -243,19 +243,60 @@
               </div>
             </div>
           </div>
+      </section>
+
+      <!-- FAQ Section -->
+      <section id="faq" class="faq-section section-padding">
+        <div class="container">
+          <div class="text-center mb-5">
+            <span class="section-tag reveal-up">Tanya Jawab</span>
+            <h2 class="font-framed reveal-up">Pertanyaan <span>Umum</span></h2>
+          </div>
+          <div class="faq-grid reveal-up">
+            <div class="faq-item">
+              <div class="faq-question">
+                <h3>Bagaimana cara memesan undangan digital?</h3>
+                <i data-lucide="plus"></i>
+              </div>
+              <div class="faq-answer">
+                <p>Anda dapat memilih desain di katalog kami, lalu klik tombol "Pesan" atau "Detail". Setelah itu, Anda
+                  bisa langsung menghubungi kami via WhatsApp untuk pengisian data dan konfirmasi pembayaran.</p>
+              </div>
+            </div>
+            <div class="faq-item">
+              <div class="faq-question">
+                <h3>Berapa lama proses pengerjaannya?</h3>
+                <i data-lucide="plus"></i>
+              </div>
+              <div class="faq-answer">
+                <p>Proses pengerjaan biasanya memakan waktu 1-2 hari kerja setelah data lengkap kami terima. Kami juga
+                  menyediakan layanan ekspres jika Anda membutuhkan dalam waktu beberapa jam saja.</p>
+              </div>
+            </div>
+            <div class="faq-item">
+              <div class="faq-question">
+                <h3>Apakah bisa revisi data setelah jadi?</h3>
+                <i data-lucide="plus"></i>
+              </div>
+              <div class="faq-answer">
+                <p>Tentu saja. Kami memberikan kesempatan revisi gratis hingga undangan benar-benar sesuai dengan
+                  keinginan Anda sebelum link disebarkan secara massal.</p>
+              </div>
+            </div>
+            <div class="faq-item">
+              <div class="faq-question">
+                <h3>Apa itu Surprise Gift Digital?</h3>
+                <i data-lucide="plus"></i>
+              </div>
+              <div class="faq-answer">
+                <p>Surprise Gift Digital adalah layanan kado unik berbentuk link interaktif. Di dalamnya bisa berisi
+                  pesan khusus, galeri foto, musik, hingga link kejutan lainnya yang didesain secara premium.</p>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      <!-- Checkout Modal Indicator -->
-      <div id="checkout-modal" class="checkout-modal">
-        <div class="checkout-info">
-          <span id="cart-item-name">Tidak ada pesanan</span>
-          <small>Hanya 1 transaksi diperbolehkan</small>
-        </div>
-        <a href="#" id="final-checkout-btn" class="checkout-btn">Checkout WhatsApp</a>
-        <button id="clear-cart"
-          style="background:none; border:none; color:rgba(255,255,255,0.3); font-size:0.7rem; cursor:pointer;">Hapus</button>
-      </div>
 
       <!-- Contact/Footer -->
       <footer id="contact" class="footer section-padding">
@@ -283,32 +324,47 @@
               <div class="footer-col reveal-up" style="--d: 0.2s">
                 <h4>Layanan</h4>
                 <ul>
-                  <li><a href="#">Bantuan Konsumen</a></li>
-                  <li><a href="#">FAQ</a></li>
-                  <li><a href="#">Status Order</a></li>
+                  <li><a
+                      href="https://wa.me/62895337858815?text=Halo%20Scrooth%20Glifth,%20saya%20butuh%20bantuan%20terkait%20layanan.">WhatsApp
+                      Support</a></li>
+                  <li><a href="#faq">FAQ</a></li>
+                  <li><a
+                      href="https://wa.me/62895337858815?text=Halo%20Scrooth%20Glifth,%20saya%20ingin%20cek%20status%20pesanan%20saya.">Status
+                      Order</a></li>
                 </ul>
               </div>
               <div class="footer-col reveal-right">
                 <h4>Lokasi</h4>
                 <ul>
-                  <li>hello@scroothglifth.com</li>
+                  <li>scroothglifth@gmail.com</li>
                   <li>+62 895 3378 58815</li>
-                  <li>Jakarta, Indonesia</li>
+                  <li>Sidoarjo, Indonesia</li>
                 </ul>
               </div>
             </div>
           </div>
           <div class="footer-bottom">
-            <p>&copy; 2024 Scrooth Glifth. Seluruh Hak Cipta Dilindungi.</p>
+            <p>&copy; 2026 Scrooth Glifth. Seluruh Hak Cipta Dilindungi.</p>
             <div class="legal-links">
-              <a href="#">Privacy Policy</a>
-              <a href="#">Terms of Service</a>
+              <a href="privacy.html">Privacy Policy</a>
+              <a href="terms.html">Terms of Service</a>
             </div>
           </div>
         </div>
       </footer>
 
     </div>
+  </div>
+
+  <!-- Checkout Modal Indicator (Outside wrapper for fixed positioning) -->
+  <div id="checkout-modal" class="checkout-modal">
+    <div class="checkout-info">
+      <span id="cart-item-name">Tidak ada pesanan</span>
+      <small>Hanya 1 transaksi diperbolehkan</small>
+    </div>
+    <a href="" id="final-checkout-btn" class="checkout-btn" target="_blank">Checkout WhatsApp</a>
+    <button id="clear-cart"
+      style="background:none; border:none; color:rgba(255,255,255,0.3); font-size:0.7rem; cursor:pointer;">Hapus</button>
   </div>
 
   <script src="js/script.js"></script>

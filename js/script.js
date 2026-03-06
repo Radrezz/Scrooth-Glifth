@@ -1,13 +1,9 @@
-// 1. Initialize Lenis Smooth Scroll
 const lenis = new Lenis({
-    duration: 1.8,
-    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    lerp: 0.06,
+    wheelMultiplier: 0.8,
+    touchMultiplier: 1.2, // Enable smooth scroll for mobile/touch
     smoothWheel: true,
-    orientation: 'vertical',
-    gestureOrientation: 'vertical',
-    wheelMultiplier: 1.1,
-    touchMultiplier: 2,
-    infinite: false,
+    smoothTouch: true,
 });
 
 function raf(time) {
@@ -16,9 +12,170 @@ function raf(time) {
 }
 requestAnimationFrame(raf);
 
+// Sync ScrollTrigger
+lenis.on('scroll', ScrollTrigger.update);
+
+
 // 2. GSAP Plug-ins Registration
 gsap.registerPlugin(ScrollTrigger);
-lenis.on('scroll', ScrollTrigger.update);
+
+// --------------------------------------------------------------------------
+// 2.2 Global Reveal Animations (Viewport Entrance)
+// --------------------------------------------------------------------------
+function initRevealAnimations() {
+    // Standard Slide Up (Bio / About / FAQ)
+    document.querySelectorAll('.reveal-up').forEach((el) => {
+        gsap.to(el, {
+            scrollTrigger: {
+                trigger: el,
+                start: "top 88%",
+                toggleActions: "play none none none"
+            },
+            opacity: 1,
+            y: 0,
+            duration: 1.4,
+            delay: el.dataset.d || 0,
+            ease: "power3.out"
+        });
+    });
+
+    // Fade Blur (Slow & Smooth - for Premium looks)
+    document.querySelectorAll('.reveal-fade-blur').forEach((el) => {
+        gsap.to(el, {
+            scrollTrigger: {
+                trigger: el,
+                start: "top 85%"
+            },
+            opacity: 1,
+            filter: "blur(0px)",
+            scale: 1,
+            duration: 1.8,
+            delay: el.dataset.d || 0,
+            ease: "expo.out"
+        });
+    });
+
+    // Side Sections (Slide Side - for Transaction/Payment)
+    document.querySelectorAll('.reveal-side-left').forEach((el) => {
+        gsap.to(el, {
+            scrollTrigger: {
+                trigger: el,
+                start: "top 85%"
+            },
+            opacity: 1,
+            x: 0,
+            duration: 1.5,
+            delay: el.dataset.d || 0,
+            ease: "power4.out"
+        });
+    });
+
+    document.querySelectorAll('.reveal-side-right').forEach((el) => {
+        gsap.to(el, {
+            scrollTrigger: {
+                trigger: el,
+                start: "top 85%"
+            },
+            opacity: 1,
+            x: 0,
+            duration: 1.5,
+            delay: el.dataset.d || 0,
+            ease: "power4.out"
+        });
+    });
+}
+
+// --------------------------------------------------------------------------
+// 2.3 Initial Load Animation (First Entrance - Slow & Smooth Blur)
+// --------------------------------------------------------------------------
+function initLoadAnimations() {
+    const tl = gsap.timeline();
+
+    tl.to('.hero-pretitle', { opacity: 1, y: 0, filter: 'blur(0px)', duration: 1.5, ease: 'power3.out' })
+        .to('.hero-main-title span', {
+            opacity: 1,
+            y: 0,
+            filter: 'blur(0px)',
+            stagger: 0.3,
+            duration: 2,
+            ease: 'expo.out'
+        }, '-=1.2')
+        .to('.hero-subtitle', { opacity: 1, filter: 'blur(0px)', duration: 1.5 }, '-=1.2')
+        .to('.hero-btns .btn', { opacity: 1, y: 0, filter: 'blur(0px)', stagger: 0.2, duration: 1.2 }, '-=1');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    if (window.lucide) lucide.createIcons();
+    initRevealAnimations();
+    initLoadAnimations();
+    initScrollSpy();
+
+    // Check if on legal pages
+    if (document.body.classList.contains('legal-page')) {
+        initMovieCreditsScroll();
+    }
+
+    // Force closed on mobile load
+    if (window.innerWidth <= 1024) {
+        toggleSidebar(true);
+    }
+});
+
+// --------------------------------------------------------------------------
+// 2.4 Scroll Spy (Automatic Nav Active State)
+// --------------------------------------------------------------------------
+function initScrollSpy() {
+    const sections = ['home', 'bio', 'catalog', 'payment', 'contact'];
+    const navLinks = document.querySelectorAll('.nav-item');
+
+    sections.forEach(id => {
+        const section = document.getElementById(id);
+        if (!section) return;
+
+        ScrollTrigger.create({
+            trigger: section,
+            start: "top 40%",
+            end: "bottom 40%",
+            onEnter: () => updateNav(id),
+            onEnterBack: () => updateNav(id),
+        });
+    });
+
+    function updateNav(id) {
+        navLinks.forEach(link => {
+            const href = link.getAttribute('href');
+            if (href === `#${id}`) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
+    }
+}
+
+function initMovieCreditsScroll() {
+    // Special slow scroll for Terms/Privacy
+    const speed = 0.5; // slow velocity
+    let isAutoScrolling = true;
+
+    function autoScroll() {
+        if (!isAutoScrolling) return;
+        const currentScroll = lenis.scroll;
+        const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+
+        if (currentScroll < maxScroll) {
+            lenis.scrollTo(currentScroll + speed, { immediate: true });
+            requestAnimationFrame(autoScroll);
+        }
+    }
+
+    // Toggle on interaction
+    window.addEventListener('wheel', () => isAutoScrolling = false, { once: true });
+    window.addEventListener('touchstart', () => isAutoScrolling = false, { once: true });
+
+    // Start after slight delay
+    setTimeout(autoScroll, 2000);
+}
 
 // 3. Side Navbar - Pure CSS Class Toggle (no GSAP conflict)
 const sidebar = document.getElementById('sidebar');
@@ -26,13 +183,16 @@ const navOpenBtn = document.getElementById('nav-open-trigger');
 const navCloseBtn = document.getElementById('nav-close-trigger');
 
 function toggleSidebar(isCollapsed) {
+    // Both class changes happen at the same time for perfect sync
     sidebar.classList.toggle('collapsed', isCollapsed);
-    // On mobile, we use 'active' class for the full-screen menu
+    document.body.classList.toggle('nav-collapsed', isCollapsed);
+
+    // Additional mobile class for full-screen menu
     if (window.innerWidth <= 1024) {
         if (isCollapsed) sidebar.classList.remove('active');
         else sidebar.classList.add('active');
     }
-    document.body.classList.toggle('nav-collapsed', isCollapsed);
+
     navOpenBtn.classList.toggle('visible', isCollapsed);
     setTimeout(() => ScrollTrigger.refresh(), 850);
 }
@@ -40,7 +200,30 @@ function toggleSidebar(isCollapsed) {
 if (navCloseBtn) navCloseBtn.addEventListener('click', () => toggleSidebar(true));
 if (navOpenBtn) navOpenBtn.addEventListener('click', () => toggleSidebar(false));
 
-// 4. Custom Spotlight & Hero Parallax
+// 4. Smooth Scroll for Anchor Links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href');
+        if (targetId === '#') return;
+
+        // Auto-close sidebar on mobile after clicking a link
+        if (window.innerWidth <= 1024) {
+            toggleSidebar(true);
+        }
+
+        const targetElement = document.querySelector(targetId);
+        if (targetElement) {
+            lenis.scrollTo(targetElement, {
+                offset: 0,
+                duration: 2,
+                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
+            });
+        }
+    });
+});
+
+// 5. Custom Spotlight & Hero Parallax
 const spotlight = document.querySelector('.spotlight');
 const heroImg = document.querySelector('.hero-img');
 const heroContent = document.querySelector('.hero-text-wrapper');
@@ -65,209 +248,251 @@ if (window.innerWidth > 1024) {
         // Hero Parallax (Cursor) - Applied to BACKGROUND and DECO, not text content
         if (heroImg) {
             gsap.to(heroImg, {
-                x: xPos * 10, // Reduced intensity (was 30)
-                y: yPos * 10,
-                duration: 3, // Slower (was 2)
+                x: xPos * 20,
+                y: yPos * 20,
+                duration: 1,
                 ease: "power2.out"
             });
         }
-
         if (deco1) {
             gsap.to(deco1, {
-                x: xPos * -20, // Reduced intensity (was -70)
-                y: yPos * -20,
-                duration: 4, // Slower (was 2.5)
+                x: -xPos * 40,
+                y: -yPos * 40,
+                duration: 1.5,
                 ease: "power2.out"
             });
         }
-
         if (deco2) {
             gsap.to(deco2, {
-                x: xPos * 15, // Reduced intensity (was 50)
-                y: yPos * 15,
-                duration: 5, // Slower (was 3)
+                x: xPos * 60,
+                y: yPos * 60,
+                duration: 1.8,
                 ease: "power2.out"
             });
         }
     });
 }
 
-// Scroll Parallax for Hero
-if (heroImg) {
-    gsap.to(heroImg, {
-        yPercent: 30,
-        scale: 1.1,
-        ease: "none",
-        scrollTrigger: {
-            trigger: "#home",
-            start: "top top",
-            end: "bottom top",
-            scrub: true
-        }
-    });
-}
+// 5. Catalog Data
+const catalogData = {
+    undangan: [
+        { id: 0, name: "Model 01", desc: "Romeo & Juliet concept - Elegant, formal, dan classical.", img: "assets/images/undangan/template1.png", oldPrice: "50.000", newPrice: "30.000", note: "berlaku hingga 12 april 2026" },
+        { id: 1, name: "Model 02", desc: "Javanese Version - Template bersih dengan sentuhan tradisional.", img: "assets/images/undangan/template2.png", oldPrice: "50.000", newPrice: "30.000", note: "berlaku hingga 12 april 2026" },
+        { id: 2, name: "Model 03", desc: "Aesthetic Simple - Pendekatan minimal untuk keterbacaan sempurna.", img: "assets/images/undangan/template3.png", oldPrice: "50.000", newPrice: "30.000", note: "berlaku hingga 12 april 2026" },
+        { id: 3, name: "Model 04", desc: "Floral Garden - Desain dengan aksen bunga yang romantis.", img: "assets/images/undangan/template4.png", oldPrice: "50.000", newPrice: "30.000", note: "berlaku hingga 12 april 2026" },
+        { id: 4, name: "Model 05", desc: "Modern Minimalist - Fokus pada tipografi dan ruang kosong.", img: "assets/images/undangan/template5.png", oldPrice: "50.000", newPrice: "30.000", note: "berlaku hingga 12 april 2026" }
+    ],
+    gift: [
+        { id: 0, name: "ProfileBirthday-Template", desc: "Template untuk ucapan ulang tahun interaktif.", img: "assets/images/fun-gift/gift1.png", prefix: "Mulai dari ", oldPrice: "60.000", newPrice: "40.000" }
+    ]
+};
 
-// 5. Cinematic Entrance
-const entranceTl = gsap.timeline({ defaults: { ease: "expo.out" } });
-gsap.set('.hero-img', { scale: 1.4, opacity: 0 });
-gsap.set('.hero-main-title span', { y: 100, opacity: 0 });
-gsap.set('.frame-edge', { scale: 0, opacity: 0 });
-gsap.set('.hero-pretitle, .hero-subtitle, .hero-btns', { y: 30, opacity: 0 });
-if (window.innerWidth > 1024) {
-    gsap.set('.side-nav', { x: -100 });
-}
-gsap.set('.hero-deco', { scale: 0, opacity: 0 });
-
-entranceTl
-    .to('.hero-img', { opacity: 0.6, scale: 1, duration: 4, ease: "power2.inOut" }, 0);
-
-if (window.innerWidth > 1024) {
-    entranceTl.to('.side-nav', { x: 0, duration: 1.5, ease: "expo.out" }, 0.5);
-}
-
-entranceTl
-    .to('.hero-main-title span', { y: 0, opacity: 1, stagger: 0.2, duration: 2 }, 1)
-    .to('.frame-edge', { scale: 1, opacity: 1, stagger: 0.2, duration: 1.5, ease: "back.out(1.7)" }, 1.5)
-    .to('.hero-deco', { scale: 1, opacity: 1, stagger: 0.3, duration: 2.5, ease: "power2.out" }, 1.8)
-    .to(['.hero-pretitle', '.hero-subtitle', '.hero-btns'], { y: 0, opacity: 1, duration: 1.5, stagger: 0.2, ease: "power3.out" }, 2)
-    .call(() => {
-        if (window.innerWidth > 1024) {
-            gsap.set('.side-nav', { clearProps: 'x,transform' });
-        }
-    });
-
-document.querySelectorAll('.reveal-up, .reveal-left, .reveal-right, .reveal-blur').forEach((el) => {
-    let fromState = { opacity: 0 };
-    if (el.classList.contains('reveal-up')) fromState.y = 80;
-    if (el.classList.contains('reveal-left')) fromState.x = -80;
-    if (el.classList.contains('reveal-right')) fromState.x = 80;
-    if (el.classList.contains('reveal-blur')) fromState.filter = 'blur(15px)';
-    gsap.fromTo(el, fromState, {
-        opacity: 1, y: 0, x: 0, filter: 'blur(0px)', duration: 1.8, ease: "power3.out",
-        scrollTrigger: { trigger: el, start: "top 95%", toggleActions: "play none none none" }
-    });
-});
-
-// 6. Circular Carousel System
-// Active card is placed at 0 degrees (RIGHT side of ellipse).
-// Orbit radius is 420px horizontally to fit within viewport without clipping.
+// 6. Circular Catalog Logic
+let activeCategory = 'undangan';
+let activeIndex = 0;
 const itemsCircle = document.getElementById('carousel-items-circle');
 const centralTitle = document.getElementById('active-category-title');
 const centralDesc = document.getElementById('active-product-desc');
 const centralLink = document.getElementById('view-detail-link');
 
-const catalogData = {
-    undangan: [
-        { name: "Model 01", desc: "Romeo & Juliet concept - Elegant, formal, dan classical.", img: "assets/images/undangan/template1.png", id: 0, oldPrice: "50.000", newPrice: "30.000", note: "berlaku hingga 12 april 2026" },
-        { name: "Model 02", desc: "Javanese Version - Template bersih dengan sentuhan tradisional.", img: "assets/images/undangan/template2.png", id: 1, oldPrice: "50.000", newPrice: "30.000", note: "berlaku hingga 12 april 2026" },
-        { name: "Model 03", desc: "Aesthetic Simple - Pendekatan minimal untuk keterbacaan sempurna.", img: "assets/images/undangan/template3.png", id: 2, oldPrice: "50.000", newPrice: "30.000", note: "berlaku hingga 12 april 2026" },
-        { name: "Model 04", desc: "Clean Color Mix - Palet warna modern dengan interaksi halus.", img: "assets/images/undangan/template4.png", id: 3, oldPrice: "50.000", newPrice: "30.000", note: "berlaku hingga 12 april 2026" },
-        { name: "Model 05", desc: "Modern Simple Elegant - Layout premium untuk kemewahan digital.", img: "assets/images/undangan/template5.png", id: 4, oldPrice: "50.000", newPrice: "30.000", note: "berlaku hingga 12 april 2026" }
-    ],
-    gift: [
-        { name: "Birthday Template", desc: "Pengalaman buku interaktif untuk kado digital yang sempurna.", img: "assets/images/fun-gift/gift1.png", id: 0, prefix: "Mulai dari ", oldPrice: "60.000", newPrice: "40.000" }
-    ]
-};
-
-let activeCategory = 'undangan';
-let activeIndex = 0;
 let currentGroupRotation = 0;
-let mobileCategorySelected = false; // Track if user has picked a category on mobile
+let mobileCategorySelected = false;
+let currentCart = null; // Track the single active order
 
 function getLayout() {
     const vw = window.innerWidth;
     const isMobile = vw <= 1024;
-    const availableRight = isMobile ? (vw / 2 - 20) : ((vw - 85) / 2 - 60);
+    const availableTotal = isMobile ? vw : (vw - 85);
     return {
-        rx: isMobile ? 0 : Math.min(420, availableRight - 130), // On mobile, rx=0 for centered stack
-        ry: isMobile ? 0 : 340,
+        rx: isMobile ? 140 : 320,
+        ry: isMobile ? 155 : 360,
+        activeAngleOffset: isMobile ? 90 : 0, // 90 deg Bottom, 0 deg Right
         isMobile
     };
 }
 
+function applyCardStyles() {
+    const cards = document.querySelectorAll('.circle-card');
+    const { rx, ry, activeAngleOffset, isMobile } = getLayout();
+    const angleStep = 360 / cards.length;
+
+    cards.forEach((card, i) => {
+        const itemAngle = i * angleStep; // Fixed angle for this card
+        const actualAngle = (itemAngle + currentGroupRotation); // Effective position in orbit
+        const actualAngleRad = actualAngle * (Math.PI / 180);
+
+        const isTarget = i === activeIndex;
+
+        let depth;
+        if (isMobile) {
+            depth = (Math.sin(actualAngleRad) + 1) / 2; // Bottom = 1, Top = 0
+        } else {
+            depth = (Math.cos(actualAngleRad) + 1) / 2; // Right = 1, Left = 0
+        }
+
+        const cos = Math.cos(actualAngleRad);
+        const sin = Math.sin(actualAngleRad);
+
+        let finalX = cos * rx;
+        let finalY = sin * ry;
+
+        // FORCE ANCHOR: Active card stays at right (desktop) or bottom (mobile)
+        if (isTarget) {
+            if (!isMobile) {
+                finalX = rx;
+                finalY = 0;
+            } else {
+                finalX = 0;
+                finalY = ry;
+            }
+        }
+
+        const scale = isTarget ? (isMobile ? 1.55 : 1.6) : (0.5 + depth * 0.3);
+        const blurAmt = isTarget ? 0 : (1 - depth) * 6;
+        const opacity = isTarget ? 1 : (0.3 + depth * 0.4);
+        const zIdx = isTarget ? 15000 : Math.round(depth * 500) + 1;
+
+        gsap.to(card, {
+            x: finalX,
+            y: finalY,
+            scale: scale,
+            filter: `blur(${blurAmt}px)`,
+            opacity: opacity,
+            zIndex: zIdx,
+            rotation: 0, // Ensure cards stay upright (Lurus)
+            duration: 0.8,
+            ease: "power2.out",
+            overwrite: true
+        });
+    });
+}
+
 function renderCarousel() {
     if (!itemsCircle) return;
-
-    // 1. Desktop Circular Logic (Always runs but hidden on mobile via CSS)
+    const items = catalogData[activeCategory];
     itemsCircle.innerHTML = '';
-    catalogData[activeCategory].forEach((item, i) => {
+
+    items.forEach((item, i) => {
         const card = document.createElement('div');
-        card.className = `circle-card ${i === activeIndex ? 'active' : ''}`;
-        card.innerHTML = `<img src="${item.img}" alt="${item.name}"><div class="card-label">${item.name}</div>`;
-        card.addEventListener('click', () => { if (i !== activeIndex) rotateToItem(i); });
+        card.className = 'circle-card';
+        card.innerHTML = `
+            <img src="${item.img}" alt="${item.name}">
+            <span class="card-label">${item.name}</span>
+        `;
+        card.addEventListener('click', () => rotateToItem(i));
         itemsCircle.appendChild(card);
     });
 
-    // 2. Mobile Grid Logic
-    const mobileGrid = document.getElementById('mobile-catalog-grid');
-    if (mobileGrid && window.innerWidth <= 1024) {
-        mobileGrid.innerHTML = '';
+    // Handle Mobile View
+    if (window.innerWidth <= 1024) {
+        const desktopLayout = document.querySelector('.circular-layout');
+        const mobileCatalogGrid = document.querySelector('.mobile-catalog-grid');
 
-        if (!mobileCategorySelected) {
-            // Show Category Selection
-            mobileGrid.innerHTML = `
-                <div class="mobile-category-selection">
-                    <div class="category-card reveal-up" onclick="selectMobileCategory('undangan')">
-                        <div class="cat-icon"><i data-lucide="mail"></i></div>
-                        <h3>Undangan Digital</h3>
-                        <p>Koleksi desain undangan premium untuk pernikahan & acara.</p>
-                        <button class="btn btn-outline btn-sm">Buka Katalog</button>
-                    </div>
-                    <div class="category-card reveal-up" onclick="selectMobileCategory('gift')" style="--d: 0.1s">
-                        <div class="cat-icon"><i data-lucide="gift"></i></div>
-                        <h3>Surprise Gift</h3>
-                        <p>Template unik untuk kado digital dan ucapan ulang tahun.</p>
-                        <button class="btn btn-outline btn-sm">Buka Katalog</button>
-                    </div>
-                </div>
-            `;
-            if (window.lucide) lucide.createIcons();
+        if (mobileCategorySelected) {
+            if (desktopLayout) desktopLayout.style.display = 'flex';
+            if (mobileCatalogGrid) mobileCatalogGrid.style.display = 'none';
         } else {
-            // Show Templates for selected category
-            const backBtn = document.createElement('div');
-            backBtn.className = 'mobile-back-row';
-            backBtn.innerHTML = `<button onclick="resetMobileCatalog()" class="back-link"><i data-lucide="chevron-left"></i> Kembali ke Kategori</button>`;
-            mobileGrid.appendChild(backBtn);
-
-            const gridContainer = document.createElement('div');
-            gridContainer.className = 'templates-inner-grid';
-
-            catalogData[activeCategory].forEach((item, i) => {
-                const card = document.createElement('div');
-                card.className = 'mobile-card reveal-up';
-                card.innerHTML = `
-                    <div class="mobile-card-img-wrap">
-                        <img src="${item.img}" alt="${item.name}">
-                    </div>
-                    <div class="mobile-card-info">
-                        <h3>${item.name}</h3>
-                        <p>${item.desc}</p>
-                        <div class="mobile-card-price">
-                            ${item.prefix ? `<span class="price-prefix">${item.prefix}</span>` : ''}
-                            <span class="price-old">Rp${item.oldPrice}</span>
-                            <span class="price-new">Rp${item.newPrice}</span>
-                            ${item.note ? `<div class="price-note">${item.note}</div>` : ''}
-                        </div>
-                        <a href="detail.html?id=${item.id}&type=${activeCategory}" class="btn btn-primary btn-sm">Lihat Detail</a>
-                    </div>
-                `;
-                gridContainer.appendChild(card);
-            });
-            mobileGrid.appendChild(gridContainer);
-            if (window.lucide) lucide.createIcons();
+            if (desktopLayout) desktopLayout.style.display = 'none';
+            if (mobileCatalogGrid) mobileCatalogGrid.style.display = 'block';
         }
     }
 
-    gsap.set(itemsCircle, { rotation: currentGroupRotation });
-    placeCards();
+    activeIndex = 0;
+    const { activeAngleOffset } = getLayout();
+    currentGroupRotation = activeAngleOffset - (activeIndex * (360 / items.length));
+
+    updateCenterInfo();
+    applyCardStyles();
 }
 
-function selectMobileCategory(type) {
-    activeCategory = type;
+function rotateToItem(targetIndex) {
+    const count = catalogData[activeCategory].length;
+    const angleStep = 360 / count;
+    const { activeAngleOffset } = getLayout();
+
+    activeIndex = targetIndex;
+
+    // Target group rotation to bring active item to front
+    const targetGroupRotation = activeAngleOffset - (targetIndex * angleStep);
+
+    // Normalize for shortest path
+    let delta = targetGroupRotation - currentGroupRotation;
+    delta = ((delta + 180) % 360) - 180;
+    const finalRotation = currentGroupRotation + delta;
+
+    // Animate currentGroupRotation smoothly with a snappier, more responsive duration
+    gsap.to({ val: currentGroupRotation }, {
+        val: finalRotation,
+        duration: 0.6, // Reduced from 1.2s for much faster feedback
+        ease: "power3.out", // Snappier ease
+        onUpdate: function () {
+            currentGroupRotation = this.targets()[0].val;
+            applyCardStyles();
+        },
+        onComplete: () => {
+            currentGroupRotation = finalRotation % 360;
+        }
+    });
+
+    updateCenterInfo();
+}
+
+function updateCenterInfo() {
+    const item = catalogData[activeCategory][activeIndex];
+
+    const existingBack = document.querySelector('.mobile-back-row');
+    if (existingBack) existingBack.remove();
+
+    gsap.to('.circular-center > *', {
+        y: -10, opacity: 0, duration: 0.25, stagger: 0.04, onComplete: () => {
+            if (centralTitle) {
+                centralTitle.innerText = item.name;
+                // Auto-adjust title size based on length to prevent overflow
+                if (item.name.length > 20) {
+                    centralTitle.style.fontSize = '1.3rem';
+                } else if (item.name.length > 15) {
+                    centralTitle.style.fontSize = '1.5rem';
+                } else {
+                    centralTitle.style.fontSize = '2.2rem';
+                }
+            }
+            if (centralDesc) centralDesc.innerText = item.desc;
+            if (centralLink) centralLink.setAttribute('href', `detail.html?id=${item.id}&type=${activeCategory}`);
+
+            const priceContainer = document.getElementById('active-product-price');
+            if (priceContainer) {
+                const prefixEl = priceContainer.querySelector('.price-prefix');
+                const oldEl = priceContainer.querySelector('.price-old');
+                const newEl = priceContainer.querySelector('.price-new');
+                const noteEl = priceContainer.querySelector('.price-note');
+
+                if (prefixEl) prefixEl.innerText = item.prefix || '';
+                if (oldEl) oldEl.innerText = item.oldPrice ? `Rp${item.oldPrice}` : '';
+                if (newEl) newEl.innerText = item.newPrice ? `Rp${item.newPrice}` : '';
+                if (noteEl) noteEl.innerText = item.note || '';
+            }
+
+            if (window.innerWidth <= 1024 && mobileCategorySelected) {
+                const backRow = document.createElement('div');
+                backRow.className = 'mobile-back-row mt-3';
+                backRow.innerHTML = `<button onclick="resetMobileCatalog()" class="back-link btn-sm" style="font-size:0.6rem; margin-top: 1rem;"><i data-lucide="chevron-left"></i> Ganti Kategori</button>`;
+                document.querySelector('.circular-center').appendChild(backRow);
+                if (window.lucide) lucide.createIcons();
+            }
+
+            gsap.fromTo('.circular-center > *:not(.mobile-back-row)', { y: 15, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7, stagger: 0.08, ease: "power2.out" });
+        }
+    });
+    document.querySelectorAll('.circle-card').forEach((c, i) => c.classList.toggle('active', i === activeIndex));
+}
+
+function setActiveCategory(cat) {
+    activeCategory = cat;
+    document.querySelectorAll('.category-toggle-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.type === cat);
+    });
     mobileCategorySelected = true;
     renderCarousel();
-    // Scroll slightly to top of catalog
-    document.getElementById('catalog').scrollIntoView({ behavior: 'smooth' });
 }
 
 function resetMobileCatalog() {
@@ -275,205 +500,104 @@ function resetMobileCatalog() {
     renderCarousel();
 }
 
+// 7. Initialize
+window.addEventListener('load', () => {
+    renderCarousel();
+    if (window.lucide) lucide.createIcons();
 
-function placeCards() {
-    const cards = document.querySelectorAll('.circle-card');
-    const { rx, ry } = getLayout();
-    const count = cards.length;
-    const angleStep = 360 / count;
-    cards.forEach((card, i) => {
-        const angleRad = (i * angleStep) * (Math.PI / 180);
-        gsap.set(card, {
-            left: '50%', top: '50%',
-            xPercent: -50, yPercent: -50,
-            x: Math.cos(angleRad) * rx,
-            y: Math.sin(angleRad) * ry,
-            rotation: -currentGroupRotation  // Keep cards upright
+    // Catalog Buttons
+    const prevBtn = document.getElementById('prev-circle');
+    const nextBtn = document.getElementById('next-circle');
+    if (prevBtn) prevBtn.addEventListener('click', () => {
+        const count = catalogData[activeCategory].length;
+        rotateToItem((activeIndex - 1 + count) % count);
+    });
+    if (nextBtn) nextBtn.addEventListener('click', () => {
+        const count = catalogData[activeCategory].length;
+        rotateToItem((activeIndex + 1) % count);
+    });
+
+    // Category Buttons
+    document.querySelectorAll('.category-toggle-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            setActiveCategory(btn.dataset.type);
         });
     });
-    applyCardStyles();
-}
 
-function applyCardStyles() {
-    const cards = document.querySelectorAll('.circle-card');
-    const { rx, ry, isMobile } = getLayout();
-    const count = cards.length;
-    const angleStep = 360 / count;
+    // FAQ Accordion
+    document.querySelectorAll('.faq-question').forEach(q => {
+        q.addEventListener('click', () => {
+            const item = q.parentElement;
+            item.classList.toggle('active');
+        });
+    });
 
-    cards.forEach((card, i) => {
-        const actualAngleDeg = (i * angleStep + currentGroupRotation + 360) % 360;
-        const reflectsActive = Math.abs((actualAngleDeg + 360) % 360) < 10;
-        const isTarget = i === activeIndex;
+    // Simpan Pesanan Button implementation
+    const saveOrderBtn = document.getElementById('add-to-cart-btn');
+    const checkoutModal = document.getElementById('checkout-modal');
+    const cartItemName = document.getElementById('cart-item-name');
+    const finalCheckoutBtn = document.getElementById('final-checkout-btn');
+    const clearCartBtn = document.getElementById('clear-cart');
 
-        if (isMobile) {
-            // Mobile Stack Model: Center all cards, active is visible, others hidden/scaled down
-            gsap.to(card, {
-                x: 0, y: 0,
-                scale: isTarget ? 1 : 0.8,
-                opacity: isTarget ? 1 : 0,
-                zIndex: isTarget ? 100 : 1,
-                filter: isTarget ? "blur(0px)" : "blur(10px)",
-                duration: 0.8, ease: "expo.out"
-            });
+    function updateCartUI() {
+        if (!currentCart) {
+            checkoutModal.classList.remove('active');
+            if (cartItemName) cartItemName.innerText = "Tidak ada pesanan";
         } else {
-            // Desktop Circular Model
-            const actualAngleRad = actualAngleDeg * (Math.PI / 180);
-            const orbitalX = Math.cos(actualAngleRad) * rx;
-            const depth = (orbitalX + rx) / (2 * rx);
-            const scale = isTarget ? 1.6 : (0.6 + depth * 0.25);
-            const blurAmt = isTarget ? 0 : (1 - depth) * 6;
-            const opacity = isTarget ? 1 : (0.25 + depth * 0.35);
-            const zIdx = isTarget ? 15000 : Math.round(depth * 500) + 1;
+            checkoutModal.classList.add('active');
+            if (cartItemName) cartItemName.innerText = currentCart.name;
 
-            gsap.to(card, {
-                x: Math.cos(actualAngleRad) * rx,
-                y: Math.sin(actualAngleRad) * ry,
-                scale, filter: `blur(${blurAmt}px)`, opacity, zIndex: zIdx,
-                rotation: -currentGroupRotation,
-                duration: 1.2, ease: "expo.out", overwrite: true
-            });
-        }
-    });
-}
+            // Build WA Message
+            const waMsg = encodeURIComponent(`Halo Scrooth Glifth, saya ingin memesan model berikut:
+Model: ${currentCart.name} (${currentCart.type})
+Link: http://scroothglifth.com/detail.html?id=${currentCart.id}&type=${currentCart.type}`);
 
-function updateCenterInfo() {
-    const item = catalogData[activeCategory][activeIndex];
-    gsap.to('.circular-center > *', {
-        y: -10, opacity: 0, duration: 0.25, stagger: 0.04, onComplete: () => {
-            if (centralTitle) centralTitle.innerText = item.name;
-            if (centralDesc) centralDesc.innerText = item.desc;
-            if (centralLink) centralLink.setAttribute('href', `detail.html?id=${item.id}&type=${activeCategory}`);
-            
-            // Update Price Info
-            const priceContainer = document.getElementById('active-product-price');
-            if (priceContainer) {
-                const prefixEl = priceContainer.querySelector('.price-prefix');
-                const oldEl = priceContainer.querySelector('.price-old');
-                const newEl = priceContainer.querySelector('.price-new');
-                const noteEl = priceContainer.querySelector('.price-note');
-                
-                if (prefixEl) prefixEl.innerText = item.prefix || '';
-                if (oldEl) oldEl.innerText = item.oldPrice ? `Rp${item.oldPrice}` : '';
-                if (newEl) newEl.innerText = item.newPrice ? `Rp${item.newPrice}` : '';
-                if (noteEl) noteEl.innerText = item.note || '';
-            }
-
-            gsap.fromTo('.circular-center > *', { y: 15, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7, stagger: 0.08, ease: "power2.out" });
-        }
-    });
-    document.querySelectorAll('.circle-card').forEach((c, i) => c.classList.toggle('active', i === activeIndex));
-    applyCardStyles();
-}
-
-// Auto-close menu on link click & Professional Smooth Scroll via Lenis
-document.querySelectorAll('.nav-item').forEach(item => {
-    item.addEventListener('click', (e) => {
-        const targetId = item.getAttribute('href');
-
-        // 1. If it's an anchor link, handle smooth scroll
-        if (targetId.startsWith('#')) {
-            e.preventDefault();
-            const targetEl = document.querySelector(targetId);
-            if (targetEl) {
-                // If on mobile, close sidebar first then scroll
-                if (window.innerWidth <= 1024) {
-                    toggleSidebar(true);
-                    // Slight delay to allow menu animation to start closing before scrolling
-                    setTimeout(() => {
-                        lenis.scrollTo(targetEl, { offset: 0, duration: 1.5 });
-                    }, 100);
-                } else {
-                    lenis.scrollTo(targetEl, { offset: 0, duration: 1.5 });
-                }
+            if (finalCheckoutBtn) {
+                finalCheckoutBtn.setAttribute('href', `https://wa.me/62895337858815?text=${waMsg}`);
+                finalCheckoutBtn.setAttribute('target', '_blank');
             }
         }
-    });
-});
+    }
 
-function rotateToItem(targetIndex) {
-    const count = catalogData[activeCategory].length;
-    const angleStep = 360 / count;
-    // Target rotation: card targetIndex at 0 degrees => group rotation = -targetIndex * angleStep
-    const targetRaw = -(targetIndex * angleStep);
-    // Normalize delta to shortest path
-    let delta = targetRaw - currentGroupRotation;
-    delta = ((delta + 180) % 360) - 180;
-    currentGroupRotation += delta;
-    activeIndex = targetIndex;
+    if (saveOrderBtn) {
+        saveOrderBtn.addEventListener('click', () => {
+            currentCart = {
+                ...catalogData[activeCategory][activeIndex],
+                type: activeCategory
+            };
 
-    gsap.to(itemsCircle, {
-        rotation: currentGroupRotation,
-        duration: 2, ease: "expo.inOut",
-        onUpdate: () => {
-            const liveRot = gsap.getProperty(itemsCircle, "rotation");
-            document.querySelectorAll('.circle-card').forEach(card => gsap.set(card, { rotation: -liveRot }));
-            applyCardStyles();
-        }
-    });
-    updateCenterInfo();
-}
+            updateCartUI();
 
-document.getElementById('next-circle')?.addEventListener('click', () => {
-    rotateToItem((activeIndex + 1) % catalogData[activeCategory].length);
-});
-document.getElementById('prev-circle')?.addEventListener('click', () => {
-    const count = catalogData[activeCategory].length;
-    rotateToItem((activeIndex - 1 + count) % count);
-});
+            // Create a simple premium toast notification
+            const toast = document.createElement('div');
+            toast.className = 'premium-toast';
+            toast.innerHTML = `
+                <div class="toast-content">
+                    <i data-lucide="check-circle" style="color: #6D4C41; width: 20px;"></i>
+                    <span>${currentCart.name} telah disimpan ke pesanan Anda</span>
+                </div>
+            `;
+            document.body.appendChild(toast);
 
-// Cart
-const addToCartBtn = document.getElementById('add-to-cart-btn');
-const checkoutModal = document.getElementById('checkout-modal');
-const cartItemNameIndicator = document.getElementById('cart-item-name');
-const finalCheckoutLink = document.getElementById('final-checkout-btn');
-const clearCartBtn = document.getElementById('clear-cart');
+            if (window.lucide) lucide.createIcons();
 
-function syncCart() {
-    if (window.currentBooking) {
-        cartItemNameIndicator.innerText = `Booking: ${window.currentBooking.name}`;
-        checkoutModal.classList.add('visible');
-        const msg = encodeURIComponent(`Halo Scrooth Glifth, saya tertarik dengan ${window.currentBooking.name}.`);
-        finalCheckoutLink.setAttribute('href', `https://wa.me/62895337858815?text=${msg}`);
-    } else checkoutModal.classList.remove('visible');
-}
+            // Animate Toast
+            gsap.fromTo(toast, { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: "expo.out" });
 
-if (addToCartBtn) addToCartBtn.addEventListener('click', () => {
-    const item = catalogData[activeCategory][activeIndex];
-    window.currentBooking = { name: item.name, type: activeCategory };
-    syncCart();
-});
-if (clearCartBtn) clearCartBtn.addEventListener('click', () => { window.currentBooking = null; syncCart(); });
+            setTimeout(() => {
+                gsap.to(toast, { y: -20, opacity: 0, duration: 0.6, ease: "power2.in", onComplete: () => toast.remove() });
+            }, 3000);
+        });
+    }
 
-document.querySelectorAll('.category-toggle-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        const type = btn.dataset.type;
-        if (type !== activeCategory) {
-            activeCategory = type; activeIndex = 0; currentGroupRotation = 0;
-            gsap.set(itemsCircle, { rotation: 0 });
-            document.querySelectorAll('.category-toggle-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            renderCarousel(); updateCenterInfo();
-        }
-    });
-});
-
-window.addEventListener('load', () => {
-    renderCarousel(); updateCenterInfo();
-    if (window.lucide) window.lucide.createIcons();
-
-    // Ensure mobile sidebar is closed but toggle is visible
-    if (window.innerWidth <= 1024) {
-        toggleSidebar(true);
+    if (clearCartBtn) {
+        clearCartBtn.addEventListener('click', () => {
+            currentCart = null;
+            updateCartUI();
+        });
     }
 });
 
-window.addEventListener('resize', () => { placeCards(); applyCardStyles(); });
-
-function copyText(val) {
-    navigator.clipboard.writeText(val);
-    const toast = document.createElement('div');
-    toast.innerText = "Nomor Disalin";
-    toast.style = "position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--accent);color:white;padding:12px 24px;border-radius:50px;z-index:9999;font-weight:700;";
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 2000);
-}
+window.addEventListener('resize', () => {
+    applyCardStyles();
+});

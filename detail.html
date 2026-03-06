@@ -161,8 +161,7 @@
         <div class="nav-footer"></div>
     </nav>
 
-    <main class="detail-hero"
-        style="margin-left: var(--nav-width); transition: margin-left 0.8s cubic-bezier(0.8,0,0.2,1);">
+    <main class="detail-hero">
         <div class="container">
             <a href="index.html#catalog" class="back-btn"><i data-lucide="arrow-left"></i> Kembali ke Katalog</a>
 
@@ -197,10 +196,9 @@
         </div>
     </main>
 
-    <footer class="footer section-padding"
-        style="margin-left: var(--nav-width); transition: margin-left 0.8s cubic-bezier(0.8,0,0.2,1);">
+    <footer class="footer section-padding">
         <div class="container text-center">
-            <p>&copy; 2024 Scrooth Glifth. All Rights Reserved.</p>
+            <p>&copy; 2026 Scrooth Glifth. Seluruh Hak Cipta Dilindungi.</p>
         </div>
     </footer>
 
@@ -224,8 +222,6 @@
         function toggleSidebar(isCollapsed) {
             sidebar.classList.toggle('collapsed', isCollapsed);
             navOpenBtn.classList.toggle('visible', isCollapsed);
-            if (mainEl) mainEl.style.marginLeft = isCollapsed ? '0' : 'var(--nav-width)';
-            if (footerEl) footerEl.style.marginLeft = isCollapsed ? '0' : 'var(--nav-width)';
         }
 
         if (navCloseBtn) navCloseBtn.addEventListener('click', () => toggleSidebar(true));

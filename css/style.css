@@ -33,7 +33,8 @@
 }
 
 html {
-    scroll-behavior: initial;
+    scroll-behavior: auto !important;
+    /* Prevent conflict with Lenis */
 }
 
 body {
@@ -136,13 +137,51 @@ p {
 
 /* Body & Root vars */
 :root {
-    --nav-width: 85px;
     --transition-premium: cubic-bezier(0.8, 0, 0.2, 1);
 }
 
+section,
+footer,
+main {
+    transition: margin-left 0.8s var(--transition-premium);
+}
+
+body:not(.nav-collapsed) section,
+body:not(.nav-collapsed) footer,
+body:not(.nav-collapsed) main {
+    margin-left: var(--nav-width);
+}
+
 body.nav-collapsed section,
-body.nav-collapsed footer {
+body.nav-collapsed footer,
+body.nav-collapsed main {
     margin-left: 0 !important;
+}
+
+/* -------------------------------------------------------------------------- */
+/* REVEAL ANIMATIONS BASE STATES */
+/* -------------------------------------------------------------------------- */
+.reveal-up {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: none;
+    /* Handled by GSAP */
+}
+
+.reveal-left {
+    opacity: 0;
+    transform: translateX(-40px);
+    transition: none;
+}
+
+.reveal-right {
+    opacity: 0;
+    transform: translateX(40px);
+}
+
+.reveal-scale {
+    opacity: 0;
+    transform: scale(0.9);
 }
 
 /* Side Navbar - Silk Cream Sidebar */
@@ -627,7 +666,8 @@ body.nav-collapsed footer {
     filter: blur(60px);
     border-radius: 50%;
     pointer-events: none;
-    z-index: 2;
+    /* Prevent interference */
+    z-index: 1;
 }
 
 .deco-1 {
@@ -642,13 +682,10 @@ body.nav-collapsed footer {
 
 /* Bio Section Optimization */
 .bio-section {
-    margin-left: var(--nav-width);
     background: var(--bg);
-    transition: margin-left 0.8s var(--transition-premium);
     position: relative;
     z-index: 10;
     padding-top: 20vh !important;
-    /* Move content down to make room for transition */
 }
 
 /* Seamless Top Masking - Deep Dark Transition */
@@ -730,16 +767,16 @@ body.nav-collapsed footer {
 
 /* Circular Catalog Layout Optimization */
 .catalog-circular-section {
-    margin-left: var(--nav-width);
     min-height: 140vh;
     display: flex;
     align-items: center;
     background: var(--bg);
     position: relative;
-    z-index: 10;
+    z-index: 1000;
+    /* High z-index for the entire section */
     overflow: hidden;
     padding: 100px 0;
-    transition: margin-left 0.8s var(--transition-premium);
+    perspective: 3000px;
 }
 
 .catalog-circular-section.full-width {
@@ -747,33 +784,40 @@ body.nav-collapsed footer {
 }
 
 .circular-layout {
-    position: relative;
-    width: 100%;
-    height: 1000px;
     display: flex;
     justify-content: center;
     align-items: center;
-    transform: translateX(-100px);
-    /* Shift entire catalog left */
+    transform: translateX(-5vw);
+    /* Shifted 10% right from -15vw (Total -5vw from center) */
+    transform-style: preserve-3d;
+    width: 100%;
+    margin: 0 auto;
 }
 
 .circular-center {
-    width: min(420px, 85vw);
-    height: min(460px, 85vw);
+    width: min(410px, 85vw);
+    min-height: 400px;
     text-align: center;
-    z-index: 6000;
-    padding: 2.5rem 2.5rem;
+    z-index: 20000;
+    padding: 2.5rem;
     background: var(--white);
-    border: 1px solid rgba(177, 116, 87, 0.1);
-    border-radius: var(--radius-organic);
+    border: 1px solid rgba(177, 116, 87, 0.08);
+    border-radius: 65% 35% 70% 30% / 40% 60% 40% 60%;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    box-shadow: 0 40px 120px rgba(177, 116, 87, 0.08);
+    align-items: center;
+    box-shadow: 0 40px 100px rgba(177, 116, 87, 0.08);
     position: relative;
-    transform: translateX(-120px);
-    /* Shift left to make room for active card on right */
-    animation: morphing 15s infinite alternate ease-in-out;
+    transform: translateX(-160px);
+    margin-right: 0;
+    animation: morphing 20s infinite alternate ease-in-out;
+    pointer-events: auto !important;
+}
+
+.circular-center>* {
+    pointer-events: auto !important;
+    text-align: center;
 }
 
 @keyframes morphing {
@@ -791,57 +835,33 @@ body.nav-collapsed footer {
 }
 
 .circular-center h2 {
-    font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+    font-size: 2.2rem;
+    /* Increased base size for larger container */
     margin-bottom: 0.5rem;
     color: var(--accent);
     font-family: var(--font-heading);
-    line-height: 1.1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-/* Inline Carousel Nav */
-.carousel-nav-inline {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    margin-bottom: 1rem;
-}
-
-.nav-btn-sm {
-    background: none;
-    border: 1px solid rgba(177, 116, 87, 0.2);
-    color: var(--accent);
-    width: 36px;
-    /* Smaller */
-    height: 36px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.nav-btn-sm:hover {
-    background: var(--accent);
-    color: var(--white);
-    transform: scale(1.1);
+    letter-spacing: 1px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
 }
 
 .circular-center p {
-    font-size: 0.7rem;
+    font-size: 0.75rem;
+    /* Reduced from 0.85rem */
     color: var(--text);
-    margin-bottom: 0.5rem;
-    opacity: 0.7;
-    max-width: 100%;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    line-height: 1.5;
+    margin-bottom: 1rem;
+    opacity: 0.6;
+    line-height: 1.6;
+}
+
+.product-price {
+    margin-bottom: 2rem;
+}
+
+.price-new {
+    font-size: 2.2rem;
+    color: var(--accent);
 }
 
 .product-price {
@@ -886,22 +906,47 @@ body.nav-collapsed footer {
 
 /* Smaller section tag and buttons inside the catalog center */
 .circular-center .section-tag {
-    font-size: 0.55rem;
-    letter-spacing: 3px;
-    padding: 0.3rem 0.8rem;
-    margin-bottom: 0.8rem;
+    font-size: 0.5rem;
+    letter-spacing: 2px;
+    padding: 0.2rem 0.6rem;
+    margin-bottom: 0.5rem;
+    display: inline-block;
 }
 
-.circular-center .btn-sm {
-    padding: 0.6rem 1.2rem;
-    font-size: 0.6rem;
-    letter-spacing: 1.5px;
-}
-
-.circular-center .category-switch {
-    margin-top: 1rem;
-    padding-top: 1rem;
+.carousel-nav-inline {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.nav-btn-sm {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid rgba(177, 116, 87, 0.15);
+    background: var(--white);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.nav-btn-sm:hover {
+    background: var(--accent);
+    color: var(--white);
+    transform: scale(1.1);
+}
+
+.category-switch {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: center;
+    gap: 2.5rem;
+    /* Wider gap for text-based links */
 }
 
 .circular-carousel {
@@ -913,14 +958,16 @@ body.nav-collapsed footer {
     align-items: center;
     pointer-events: none;
     overflow: visible;
-    /* Allow cards to orbit outside boundary */
+    transform: translateX(180px);
+    /* Balance with blob offset to center the whole unit */
 }
 
 .carousel-circle {
     position: relative;
     width: 100%;
     height: 100%;
-    pointer-events: auto;
+    pointer-events: none;
+    /* Let clicks pass through empty spaces */
 }
 
 .circle-card {
@@ -936,7 +983,7 @@ body.nav-collapsed footer {
     cursor: pointer;
     border: 1px solid rgba(177, 116, 87, 0.05);
     pointer-events: auto;
-    /* GSAP controls scale, opacity, filter, z-index */
+    /* Only enable clicks on the cards themselves */
 }
 
 /* No CSS overrides for active/inactive - GSAP handles it all */
@@ -969,31 +1016,45 @@ body.nav-collapsed footer {
 /* Circular Navigation */
 .circular-nav {
     position: absolute;
-    bottom: 50px;
+    bottom: 60px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
-    gap: 3rem;
-    z-index: 60;
+    gap: 1.5rem;
+    z-index: 7000;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(20px);
+    padding: 0.8rem;
+    border-radius: 100px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
 }
 
-.c-nav-btn {
-    width: 60px;
-    height: 60px;
+.nav-btn {
+    width: 55px;
+    height: 55px;
     border-radius: 50%;
-    border: 1px solid var(--secondary);
+    border: 1px solid rgba(177, 116, 87, 0.1);
     background: var(--white);
+    color: var(--accent);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: var(--transition-mid);
+    transition: all 0.4s var(--transition-mid);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
 }
 
-.c-nav-btn:hover {
+.nav-btn:hover {
     background: var(--accent);
     color: var(--white);
-    border-color: var(--accent);
+    transform: scale(1.1) translateY(-2px);
+    box-shadow: 0 15px 35px rgba(177, 116, 87, 0.2);
+}
+
+.nav-btn i {
+    width: 22px;
+    height: 22px;
 }
 
 /* Category Toggle Switch */
@@ -1035,15 +1096,9 @@ body.nav-collapsed footer {
 /* Payment Suite */
 .payment-section {
     background-color: var(--white);
-    margin-left: var(--nav-width);
     position: relative;
     z-index: 20;
     padding: 15vh 0;
-    transition: margin-left 0.8s cubic-bezier(0.85, 0, 0.15, 1);
-}
-
-.payment-section.full-width {
-    margin-left: 0;
 }
 
 .payment-suite {
@@ -1210,15 +1265,9 @@ body.nav-collapsed footer {
 .footer {
     background: var(--black);
     color: rgba(255, 255, 255, 0.8);
-    margin-left: var(--nav-width);
     position: relative;
     z-index: 20;
     padding: 100px 0 50px;
-    transition: margin-left 0.8s cubic-bezier(0.85, 0, 0.15, 1);
-}
-
-.footer.full-width {
-    margin-left: 0;
 }
 
 .footer-content {
@@ -1341,38 +1390,40 @@ body.nav-collapsed footer {
 }
 
 .category-toggle-btn {
-    background: none;
-    border: none;
+    background: none !important;
+    border: none !important;
     font-family: var(--font-body);
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 500;
     letter-spacing: 2px;
     text-transform: uppercase;
     cursor: pointer;
     color: var(--text);
-    opacity: 0.4;
-    transition: 0.4s var(--transition-mid);
-    padding: 0.5rem 0;
+    opacity: 0.6;
+    transition: all 0.3s var(--transition-mid);
+    padding: 0.4rem 0;
+    position: relative;
+    box-shadow: none !important;
 }
 
+.category-toggle-btn:hover,
 .category-toggle-btn.active {
     opacity: 1;
-    font-weight: 700;
-    color: var(--accent);
+    color: var(--accent) !important;
 }
 
 .category-toggle-btn::after {
     content: '';
     position: absolute;
-    bottom: -2px;
-    left: 50%;
+    bottom: 0;
+    left: 0;
     width: 0;
-    height: 2px;
+    height: 1.5px;
     background: var(--accent);
-    transition: 0.4s var(--transition-mid);
-    transform: translateX(-50%);
+    transition: width 0.4s var(--transition-mid);
 }
 
+.category-toggle-btn:hover::after,
 .category-toggle-btn.active::after {
     width: 100%;
 }
@@ -1387,6 +1438,79 @@ body.nav-collapsed footer {
 .circular-btns .btn {
     width: 200px;
     justify-content: center;
+}
+
+/* FAQ Section */
+.faq-section {
+    background-color: var(--white);
+}
+
+.faq-grid {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    transform: translateX(0);
+}
+
+.faq-item {
+    background: var(--white);
+    border-radius: 20px;
+    border: 1px solid rgba(177, 116, 87, 0.08);
+    overflow: hidden;
+    transition: var(--transition-mid);
+}
+
+.faq-question {
+    padding: 1.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    background: var(--white);
+}
+
+.faq-question h3 {
+    font-size: 1rem;
+    font-family: var(--font-body);
+    font-weight: 600;
+    text-transform: none;
+    letter-spacing: 0;
+    margin: 0;
+}
+
+.faq-question i {
+    color: var(--accent);
+    transition: transform 0.4s;
+}
+
+.faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.6s cubic-bezier(0, 1, 0, 1);
+    background: #fafafa;
+}
+
+.faq-answer p {
+    padding: 1.5rem 2rem;
+    font-size: 0.9rem;
+    margin: 0;
+    opacity: 0.8;
+}
+
+.faq-item.active {
+    border-color: var(--accent);
+    box-shadow: 0 10px 30px rgba(177, 116, 87, 0.05);
+}
+
+.faq-item.active .faq-question i {
+    transform: rotate(45deg);
+}
+
+.faq-item.active .faq-answer {
+    max-height: 500px;
+    transition: max-height 1s ease-in-out;
 }
 
 /* Animations Hub */
@@ -1451,22 +1575,36 @@ body.nav-collapsed footer {
     }
 
     .catalog-circular-section {
-        min-height: 100vh;
-        padding: 50px 0;
+        min-height: 120vh;
+        padding: 80px 0;
+        display: flex;
+        flex-direction: column;
     }
 
     .circular-layout {
-        height: 800px;
+        height: 600px;
+        transform: translateY(0);
+        flex-direction: column;
+        display: flex;
+    }
+
+    .circular-center {
+        width: 85vw;
+        height: auto;
+        padding: 2rem;
+        transform: translateY(-50px);
+        margin-bottom: 0;
     }
 
     .circular-carousel {
         width: 100%;
-        height: 100%;
+        height: 500px;
+        position: relative;
     }
 
-    .footer-content {
-        grid-template-columns: 1fr;
-        gap: 3rem;
+    .circle-card {
+        width: 180px;
+        height: 240px;
     }
 
     .footer-links-grid {
@@ -1508,4 +1646,168 @@ body.nav-collapsed footer {
     .spotlight {
         display: none;
     }
+
+    /* Premium Toast */
+    .premium-toast {
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 100000;
+        margin-bottom: 20px;
+    }
+
+    .toast-content {
+        background: var(--white);
+        padding: 1rem 2rem;
+        border-radius: 100px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(177, 116, 87, 0.1);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--text);
+        white-space: nowrap;
+    }
+
+    /* Base Interactions refinement */
+    a,
+    button,
+    .circular-center *,
+    .circle-card {
+        transition: all 0.4s var(--transition-mid);
+    }
+}
+
+/* Checkout Modal Styling */
+.checkout-modal {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: rgba(26, 26, 26, 0.95);
+    backdrop-filter: blur(20px);
+    padding: 1.2rem 1.8rem;
+    border-radius: 20px;
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    z-index: 99999;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transform: translateY(150%);
+    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+}
+
+.checkout-modal.active {
+    transform: translateY(0);
+    pointer-events: auto !important;
+}
+
+.checkout-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.checkout-info span {
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.checkout-info small {
+    font-size: 0.6rem;
+    opacity: 0.5;
+}
+
+.checkout-btn {
+    background: var(--accent);
+    color: var(--white);
+    padding: 0.7rem 1.2rem;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.checkout-btn:hover {
+    background: var(--white);
+    color: var(--black);
+}
+
+@media (max-width: 1024px) {
+    .checkout-modal {
+        right: 15px;
+        left: 15px;
+        bottom: 15px;
+        gap: 0.8rem;
+        padding: 1rem;
+        justify-content: space-between;
+    }
+
+    .checkout-info span {
+        font-size: 0.75rem;
+    }
+
+    .checkout-btn {
+        font-size: 0.65rem;
+        padding: 0.6rem 1rem;
+    }
+}
+/* Cinema Credits Effect */
+.movie-credits-container {
+    padding-bottom: 70vh !important; /* Extremely large space for the 'end credits' feel */
+    position: relative;
+}
+
+/* Base states for entrance animations handled by JS */
+.hero-pretitle, .hero-main-title span, .hero-subtitle, .hero-btns .btn {
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+/* -------------------------------------------------------------------------- */
+/* REVEAL ANIMATIONS BASE STATES (For Smooth Viewport Entrance) */
+/* -------------------------------------------------------------------------- */
+
+/* Standard Slide Up - For General Content & About */
+.reveal-up {
+    opacity: 0;
+    transform: translateY(60px);
+    transition: none;
+}
+
+/* Side Slides - For Transaction/Payment/Highlights */
+.reveal-side-left {
+    opacity: 0;
+    transform: translateX(-80px);
+    transition: none;
+}
+
+.reveal-side-right {
+    opacity: 0;
+    transform: translateX(80px);
+    transition: none;
+}
+
+/* Fade Blur - For Hero & Premium Sections */
+.reveal-fade-blur {
+    opacity: 0;
+    filter: blur(15px);
+    transform: scale(0.95);
+    transition: none;
+}
+
+/* Base states for Hero elements (initially hidden for Load Animation) */
+.hero-pretitle, 
+.hero-main-title span, 
+.hero-subtitle, 
+.hero-btns .btn {
+    opacity: 0;
+    filter: blur(10px);
+    transform: translateY(20px);
 }

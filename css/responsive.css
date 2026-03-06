@@ -1,4 +1,4 @@
-/* 
+﻿/* 
    Responsive Redesign - Premium Mobile Experience
    Optimized for readability and premium look.
 */
@@ -85,8 +85,10 @@
     }
 
     .menu-close-btn {
-        opacity: 0.8;
-        transform: scale(1.2);
+        opacity: 1 !important;
+        transform: scale(1.5);
+        color: var(--accent) !important;
+        padding: 10px;
     }
 
     .nav-items {
@@ -275,12 +277,17 @@
     }
 
     .circular-layout {
-        display: none !important;
+        display: flex !important;
+        flex-direction: column !important;
+        height: auto !important;
+        transform: none !important;
+        gap: 0 !important;
     }
 
     .mobile-catalog-grid {
         display: block !important;
         padding: 0 8%;
+        margin-bottom: 2rem;
     }
 
     .mobile-category-selection {
@@ -291,7 +298,7 @@
 
     .category-card {
         background: var(--white);
-        padding: 3.5rem 2.5rem;
+        padding: 3rem 2rem;
         border-radius: 40px;
         text-align: center;
         border: 1px solid rgba(177, 116, 87, 0.08);
@@ -359,10 +366,49 @@
         scroll-behavior: smooth;
     }
 
-    .templates-inner-grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 2rem;
+    /* Mobile Carousel Overrides */
+    .catalog-circular-section .circular-center {
+        z-index: 1000;
+        margin-top: 0;
+        margin-bottom: 0;
+        width: 100% !important;
+        min-height: auto !important;
+        transform: translateY(-20px) !important;
+        padding: 2rem 1.5rem !important;
+    }
+
+    .circular-carousel {
+        height: 380px !important;
+        /* Smaller height */
+        margin-top: -30px;
+        transform: translateX(0) !important;
+        /* Center the orbit on mobile */
+    }
+
+    .circle-card {
+        width: 140px !important;
+        /* Smaller cards */
+        height: 190px !important;
+        padding: 8px !important;
+        border-radius: 20px 5px 20px 5px !important;
+    }
+
+    .circle-card img {
+        height: 70% !important;
+        border-radius: 15px 3px 15px 3px !important;
+    }
+
+    .circle-card .card-label {
+        font-size: 0.55rem !important;
+        letter-spacing: 1.5px !important;
+    }
+
+    .circular-center h2 {
+        font-size: 1.6rem !important;
+    }
+
+    .price-new {
+        font-size: 1.8rem !important;
     }
 
     .mobile-card {
@@ -430,18 +476,161 @@
         opacity: 0.8;
     }
 
-    /* Payment & Footer Fixes */
-    .payment-section,
-    .footer {
+    /* 5. Payment Section - Restore Single Column & Center */
+    .payment-section {
         margin-left: 0 !important;
-        padding: 100px 8% !important;
+        padding: 80px 5% !important;
+        width: 100% !important;
     }
 
     .payment-suite {
+        display: grid !important;
         grid-template-columns: 1fr !important;
+        gap: 2rem !important;
+        width: 100% !important;
     }
 
     .payment-card {
-        padding: 3rem 1.5rem !important;
+        width: 100% !important;
+        max-width: 340px !important;
+        margin: 0 auto !important;
+        padding: 2.5rem 1.5rem !important;
+    }
+
+    /* Catalog Final Shift Up */
+    .circular-carousel {
+        height: 380px !important;
+        margin-top: -160px !important; /* Even more up as requested */
+        position: relative !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        width: 100% !important;
+        left: 0 !important;
+    }
+
+    .circle-card {
+        left: 50% !important;
+        top: 50% !important;
+        margin-left: -70px !important;
+        margin-top: -95px !important;
+    }
+
+    /* Footer Absolute Centering - Force everything center */
+    .footer {
+        padding: 80px 5% 60px !important;
+        background: var(--black) !important;
+        text-align: center !important;
+        display: block !important;
+    }
+
+    .footer .container {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 100% !important;
+        margin: 0 auto !important;
+        text-align: center !important;
+    }
+
+    .footer-content {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 100% !important;
+        margin: 0 auto 3rem !important;
+        gap: 4rem !important;
+        text-align: center !important;
+    }
+
+    .footer-brand {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 100% !important;
+        margin: 0 auto !important;
+        text-align: center !important;
+        transform: none !important; /* Reset any potential translateX */
+        left: 0 !important;
+    }
+
+    .footer-brand h2, 
+    .footer-brand p, 
+    .footer-brand .social-links {
+        width: 100% !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        text-align: center !important;
+        display: block !important;
+    }
+
+    .whatsapp-btn-float {
+        display: inline-flex !important;
+        margin: 0 auto !important;
+        float: none !important;
+        width: auto !important;
+    }
+
+    .footer-links-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 100% !important;
+        gap: 3rem !important;
+        margin: 0 auto !important;
+    }
+
+    .footer-col {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 100% !important;
+        margin: 0 auto !important;
+        text-align: center !important;
+        transform: none !important;
+    }
+
+    .footer-col h4 {
+        text-align: center !important;
+        margin: 0 auto 1.5rem !important;
+        width: 100% !important;
+    }
+
+    .footer-col ul {
+        padding: 0 !important;
+        margin: 0 auto !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        width: 100% !important;
+    }
+
+    .footer-col ul li {
+        width: 100% !important;
+        text-align: center !important;
+    }
+
+    .footer-bottom {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 100% !important;
+        text-align: center !important;
+        gap: 1.5rem !important;
+        margin: 0 auto !important;
+    }
+
+    .legal-links {
+        display: flex !important;
+        flex-direction: row !important;
+        gap: 2rem !important;
+        margin-left: 0 !important;
     }
 }
+
